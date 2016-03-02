@@ -8,11 +8,11 @@
 **
 *********************************/
 
-Book::Book(std::string theTitle,
-		   std::string theISBN,
-		   std::string theAuthor,
-		   std::string thePublisher,
-		   std::string theDateAdded,
+Book::Book(string theTitle,
+		   string theISBN,
+		   string theAuthor,
+		   string thePublisher,
+		   string theDateAdded,
 		   double theRetail,
 		   double, theWholeSale,
 		   int theQuantity) {
@@ -26,23 +26,23 @@ Book::Book(std::string theTitle,
 	quantity = theQuantity;	
 }
 
-void Book::setTitle(std::string theTitle) {
+void Book::setTitle(string theTitle) {
 	title = theTitle;
 }
 
-void Book::setISBN(std::string theISBN) {
+void Book::setISBN(string theISBN) {
 	isbn = theISBN;
 }
 
-void Book::setAuthor(std::string theAuthor) {
+void Book::setAuthor(string theAuthor) {
 	author = theAuthor;
 }
 
-void Book::setPublisher(std::string thePublisher) {
+void Book::setPublisher(string thePublisher) {
 	publisher = thePublisher;
 }
 
-void Book::setDateAdded(std::string theDateAdded) {
+void Book::setDateAdded(string theDateAdded) {
 	dateAdded = theDateAdded;
 }
 
@@ -58,23 +58,23 @@ void Book::setQuantity(int theQuantity) {
 	quantity = theQuantity;
 }
 
-std::string Book::getTitle() {
+string Book::getTitle() {
 	return title;
 }
 
-std::string Book::getISBN() {
+string Book::getISBN() {
 	return isbn;
 }
 
-std::string Book::getAuthor() {
+string Book::getAuthor() {
 	return author;
 }
 
-std::string Book::getPublisher() {
+string Book::getPublisher() {
 	return publisher;
 }
 
-std::string Book::getDateAdded() {
+string Book::getDateAdded() {
 	return dateAdded;
 }
 

@@ -1,14 +1,16 @@
 #include <iostream>
 #include <string>
 
+using namespace std;
+
 class Book {
 	private:
 	protected:
-		std::string title;
-		std::string isbn;
-		std::string author;
-		std::string publisher;
-		std::string dateAdded;
+		string title;
+		string isbn;
+		string author;
+		string publisher;
+		string dateAdded;
 		double retail;
 		double wholesale;
 		int quantity;
@@ -23,27 +25,27 @@ class Book {
 			wholesale = -1.0;
 			quantity = -1;
 		}
-		Book (std::string, // title
-			  std::string, // isbn
-			  std::string, // author
-			  std::string, // publisher
-			  std::string, // dateAdded
+		Book (string, // title
+			  string, // isbn
+			  string, // author
+			  string, // publisher
+			  string, // dateAdded
 			  double, // retail
 			  double, // wholesale
 			  int); // quantity
-		void setTitle(std::string);
-		void setISBN(std::string);
-		void setAuthor(std::string);
-		void setPublisher(std::string);
-		void setDateAdded(std::string);
+		void setTitle(string);
+		void setISBN(string);
+		void setAuthor(string);
+		void setPublisher(string);
+		void setDateAdded(string);
 		void setRetail(double);
 		void setWholeSale(double);
 		void setQuantity(int);
-		std::string getTitle();
-		std::string getISBN();
-		std::string getAuthor();
-		std::string getPublisher();
-		std::string getDateAdded();
+		string getTitle();
+		string getISBN();
+		string getAuthor();
+		string getPublisher();
+		string getDateAdded();
 		double getRetail();
 		double getWholeSale();
 		int getQuantity();
