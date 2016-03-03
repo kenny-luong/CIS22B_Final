@@ -1,3 +1,6 @@
+#ifndef BOOK_H_INCLUDED
+#define BOOK_H_INCLUDED
+
 #include <iostream>
 #include <string>
 
@@ -50,3 +53,5 @@ class Book {
 		double getWholeSale();
 		int getQuantity();
 };
+
+#endif // BOOK_H_INCLUDED
