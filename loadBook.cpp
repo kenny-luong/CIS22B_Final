@@ -1,21 +1,21 @@
 void loadBook() {
 	Book *tempBook;
-	temp Book = new Book;
+	tempBook = new Book;
 	
 	std::ifstream bookDatabase;
 
 	if (!bookDatabase.is_open()) {
 		std::cout << “File could not be opened” << std::endl;
-} else {
-	std::cout << “File was successfully opened.” << std::endl;
-}
+	} else {
+		std::cout << “File was successfully opened.” << std::endl;
+	}
 
-std::string temp;
+	std::string temp;
 
-int lineCounter = 0;
+	int lineCounter = 0;
 
-while (std::getline(bookDatabase, temp)) {
-	lineCounter++;
+	while (std::getline(bookDatabase, temp)) {
+		lineCounter++;
 	}
 
 	std::string tempInput;
@@ -49,4 +49,4 @@ while (std::getline(bookDatabase, temp)) {
 			i++;
 		}
 	}
-};
+}
