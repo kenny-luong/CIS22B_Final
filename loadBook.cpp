@@ -1,52 +1,51 @@
 void loadBook() {
-	Book *tempBook;
-	tempBook = new Book;
-	
-	std::ifstream bookDatabase;
+    std::ifstream bookDatabase;
+    bookDatabase.open("books.txt", std::ios::in);
 
 	if (!bookDatabase.is_open()) {
-		std::cout << “File could not be opened” << std::endl;
+		std::cout << "File could not be opened" << std::endl;
 	} else {
-		std::cout << “File was successfully opened.” << std::endl;
-	}
-
-	std::string temp;
-
-	int lineCounter = 0;
-
-	while (std::getline(bookDatabase, temp)) {
-		lineCounter++;
+		std::cout << "File was successfully opened." << std::endl;
 	}
 
 	std::string tempInput;
-	Book array[counter/8];
-	
+
 	bookDatabase.close();
-	
-	bookDatabase.open(“books.txt”, std::ios::in);
+
+	bookDatabase.open("books.txt", std::ios::in);
 
 	int i = 0;
+	double temp1;
+	int temp2;
 
-	while(!bookDatabase.eof()) {
-		std::getline(bookDatabase, temp);
-		tempBook->setTitle(temp);
-		std::getline(bookDatabase, temp);
-		tempBook->setISBN(temp);
-		std::getline(bookDatabase, temp);
-		tempBook->setAuthor(temp);
-		std::getline(bookDatabase, temp);
-		tempBook->setPublisher(temp);
-		std::getline(bookDatabase, temp);
-		tempBook->setDateAdded(temp);
-		std::getline(bookDatabase, temp);
-		tempBook->setRetail(temp);
-		std::getline(bookDatabase, temp);
-		tempBook->setWholeSale(temp);
-		std::getline(bookDatabase, temp);
-		tempBook->setQuantity(temp);
+	while(i < size) {
+	    std::cout << "This line repeats." << std::endl;
+		std::getline(bookDatabase, tempInput);
+		tempBook->setTitle(tempInput);
+
+		std::getline(bookDatabase, tempInput);
+		tempBook->setISBN(tempInput);
+
+		std::getline(bookDatabase, tempInput);
+		tempBook->setAuthor(tempInput);
+
+		std::getline(bookDatabase, tempInput);
+		tempBook->setPublisher(tempInput);
+
+		std::getline(bookDatabase, tempInput);
+		tempBook->setDateAdded(tempInput);
+
+		bookDatabase >> temp1;
+		tempBook->setRetail(temp1);
+
+		bookDatabase >> temp1;
+		tempBook->setWholeSale(temp1);
+
+		bookDatabase >> temp2;
+		tempBook->setQuantity(temp2);
+
 		array[i] = *tempBook;
-		if (i < lineCounter) {
-			i++;
-		}
+		i++;
 	}
+	bookDatabase.close();
 }
