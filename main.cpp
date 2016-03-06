@@ -52,7 +52,6 @@ int main () {
     std::getline(cin, input);
 
     displayBook(searchBook(input));
-
 }
 
 void loadBook() {
@@ -74,35 +73,38 @@ void loadBook() {
 	int i = 0;
 	double temp1;
 	int temp2;
+	std::string garbage;
 
-		while(i < size) {
-			std::getline(bookDatabase, tempInput);
-			tempBook->setTitle(tempInput);
+	while(i < size) {
+		std::getline(bookDatabase, tempInput);
+		tempBook->setTitle(tempInput);
 
-			std::getline(bookDatabase, tempInput);
-			tempBook->setISBN(tempInput);
+		std::getline(bookDatabase, tempInput);
+		tempBook->setISBN(tempInput);
 
-			std::getline(bookDatabase, tempInput);
-			tempBook->setAuthor(tempInput);
+		std::getline(bookDatabase, tempInput);
+		tempBook->setAuthor(tempInput);
 
-			std::getline(bookDatabase, tempInput);
-			tempBook->setPublisher(tempInput);
+		std::getline(bookDatabase, tempInput);
+		tempBook->setPublisher(tempInput);
 
-			std::getline(bookDatabase, tempInput);
-			tempBook->setDateAdded(tempInput);
+		std::getline(bookDatabase, tempInput);
+		tempBook->setDateAdded(tempInput);
 
-			bookDatabase >> temp1;
-			tempBook->setRetail(temp1);
+		bookDatabase >> temp1;
+		tempBook->setRetail(temp1);
 
-			bookDatabase >> temp1;
-			tempBook->setWholeSale(temp1);
+		bookDatabase >> temp1;
+		tempBook->setWholeSale(temp1);
 
-			bookDatabase >> temp2;
-			tempBook->setQuantity(temp2);
+		bookDatabase >> temp2;
+		tempBook->setQuantity(temp2);
 
-			array[i] = *tempBook;
-			i++;
-		}
+		std::getline(bookDatabase, garbage); // this is purely to move onto the next line
+
+		array[i] = *tempBook;
+		i++;
+	}
 
 	bookDatabase.close();
 }
@@ -119,4 +121,73 @@ int sizeOfArray() {
     }
     inputFile.close();
     return counter/8;
+}
+void addBook()
+{
+	int newsize = size + 1;
+	Book *temparray = new Book[newsize];
+    Book *garbage = new Book;
+	for (int count = 0; count < size; count++)
+	{
+        if (!(count == size)) {
+            temparray[count] = array[count];
+        } else {
+            temparray[count] = *garbage;
+        }
+	}
+
+	delete[] array;
+
+
+	//temporary variables for text entry
+	//there's probably a cleaner way
+	string temptitle, tempisbn, tempauthor, temppublisher, tempdate;
+	double tempretail, tempwholesale;
+	int tempquantity;
+
+	//prompting and setting values to new entry
+	cout << "Title: ";
+	getline(cin, temptitle);
+	temparray[size].setTitle(temptitle);
+	cout << endl << "ISBN: ";
+	getline(cin, tempisbn);
+	temparray[size].setISBN(tempisbn);
+	cout << endl << "Author: ";
+	getline(cin, tempauthor);
+	temparray[size].setAuthor(tempauthor);
+	cout << endl << "Publisher: ";
+	getline(cin, temppublisher);
+	temparray[size].setPublisher(temppublisher);
+	cout << endl << "Date added: ";
+	getline(cin, tempdate);
+	temparray[size].setDateAdded(tempdate);
+	cout << endl << "Retail Price: ";
+	cin >> tempretail;
+	cin.ignore();
+	temparray[size].setRetail(tempretail);
+	cout << endl << "Wholesale Price: ";
+	cin >> tempwholesale;
+	temparray[size].setWholeSale(tempwholesale);
+	cout << endl << "Quantity: ";
+	cin >> tempquantity;
+	temparray[size].setQuantity(tempquantity);
+
+    array = temparray;
+	//debug to test added element
+
+	/*cout << array[size].getTitle() << std::endl;
+	cout << array[size].getISBN() << std::endl;
+	cout << array[size].getAuthor() << std::endl;
+	cout << array[size].getPublisher() << std::endl;
+	cout << array[size].getDateAdded() << std::endl;
+	cout << array[size].getRetail() << std::endl;
+	cout << array[size].getWholeSale() << std::endl;
+	cout << array[size].getQuantity() << std::endl;*/
+
+	//-debug-*/
+
+	//update global size value
+	size = newsize;
+
+
 }
