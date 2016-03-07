@@ -1,4 +1,6 @@
 #include <iostream>
+//added iomanip for fancy shmancy output formatting in displayBook()
+#include <iomanip>
 #include <string>
 #include <fstream>
 #include "book.h"
@@ -10,48 +12,74 @@
 ** -
 **********************/
 
+using namespace std;
+
 //GLOBALS
 
 int sizeOfArray();
+void addBook();
+void editBook();
+void deleteBook();
 
-int size = sizeOfArray();
+int arraySize = sizeOfArray();
 Book *tempBook = new Book;
 
-Book *array = new Book[size];
+Book *bookArray = new Book[arraySize];
 
 void loadBook();
 
-void displayBook(int i) {
+//note:changed displayBook() return type to be able to determine whether editBook() can continue
+//displayBook() now returns the location/not-found flag, for purpose see editBook()
+//-William
+
+int displayBook(int i) {
     if (i == -1) {
     	std::cout << "Book was not found." << std::endl;
     } else {
-	    std::cout << array[i].getTitle() << std::endl;
-	    std::cout << array[i].getISBN() << std::endl;
-	    std::cout << array[i].getAuthor() << std::endl;
-	    std::cout << array[i].getPublisher() << std::endl;
-	    std::cout << array[i].getDateAdded() << std::endl;
-	    std::cout << array[i].getRetail() << std::endl;
-	    std::cout << array[i].getWholeSale() << std::endl;
-	    std::cout << array[i].getQuantity() << std::endl;
+	    std::cout << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
+	    std::cout << setw(25) << left << "ISBN:" << setw(20) << right << bookArray[i].getISBN() << std::endl;
+	    std::cout << setw(25) << left << "Author:" << setw(20) << right << bookArray[i].getAuthor() << std::endl;
+	    std::cout << setw(25) << left << "Publisher:" << setw(20) << right << bookArray[i].getPublisher() << std::endl;
+	    std::cout << setw(25) << left << "Date Added:" << setw(20) << right << bookArray[i].getDateAdded() << std::endl;
+	    std::cout << setw(25) << left << "Retail Price:" << setw(20) << right << bookArray[i].getRetail() << std::endl;
+	    std::cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << std::endl;
+	    std::cout << setw(25) << left << "Quantity in inventory:" << setw(20) << right << bookArray[i].getQuantity() << std::endl;
     }
+	//added return
+	return i;
 }
 
 int searchBook(std::string searchCriteria) {
-	for (int i = 0; i < size; i++) {
-		if (searchCriteria == array[i].getTitle() || searchCriteria == array[i].getISBN()) {
+	for (int i = 0; i < arraySize; i++) {
+		if (searchCriteria == bookArray[i].getTitle() || searchCriteria == bookArray[i].getISBN()) {
             return i;
 		}
 	}
 	return -1;
 }
 
+//----------------------------------------
+//-----------------MAIN-------------------
+//----------------------------------------
 int main () {
     loadBook();
-    std::string input;
+   //tests search module
+	cout << "-----------NOW TESTING SEARCH MODULE----------" << endl;
+	std::string input;
     std::cout << "Search by ISBN or title: " << std::endl;
     std::getline(cin, input);
 
     displayBook(searchBook(input));
+	//tests add module
+	cout << "----------NOW TESTING ADD MODULE----------" << endl;
+	addBook();
+	//tests edit module
+	cout << "----------NOW TESTING EDIT MODULE----------" << endl;
+	editBook();
+	//tests delete module
+	cout << "----------NOW TESTING DELETE MODULE----------" << endl;
+	deleteBook();
+	system("pause");
 }
 
 void loadBook() {
@@ -75,7 +103,7 @@ void loadBook() {
 	int temp2;
 	std::string garbage;
 
-	while(i < size) {
+	while(i < arraySize) {
 		std::getline(bookDatabase, tempInput);
 		tempBook->setTitle(tempInput);
 
@@ -102,7 +130,7 @@ void loadBook() {
 
 		std::getline(bookDatabase, garbage); // this is purely to move onto the next line
 
-		array[i] = *tempBook;
+		bookArray[i] = *tempBook;
 		i++;
 	}
 
@@ -122,21 +150,39 @@ int sizeOfArray() {
     inputFile.close();
     return counter/8;
 }
+void output()
+{
+	ofstream output;
+	output.open("books.txt");
+	for (int count = 0; count < arraySize; count++)
+	{
+		output << bookArray[count].getTitle() << endl;
+		output << bookArray[count].getISBN() << endl;
+		output << bookArray[count].getAuthor() << endl;
+		output << bookArray[count].getPublisher() << endl;
+		output << bookArray[count].getDateAdded() << endl;
+		output << bookArray[count].getRetail() << endl;
+		output << bookArray[count].getWholeSale() << endl;
+		output << bookArray[count].getQuantity() << endl;
+	}
+
+}
+
 void addBook()
 {
-	int newsize = size + 1;
+	int newsize = arraySize + 1;
 	Book *temparray = new Book[newsize];
     Book *garbage = new Book;
-	for (int count = 0; count < size; count++)
+	for (int count = 0; count < arraySize; count++)
 	{
-        if (!(count == size)) {
-            temparray[count] = array[count];
+        if (!(count == arraySize)) {
+            temparray[count] = bookArray[count];
         } else {
             temparray[count] = *garbage;
         }
 	}
 
-	delete[] array;
+	delete[] bookArray;
 
 
 	//temporary variables for text entry
@@ -146,33 +192,33 @@ void addBook()
 	int tempquantity;
 
 	//prompting and setting values to new entry
-	cout << "Title: ";
-	getline(cin, temptitle);
-	temparray[size].setTitle(temptitle);
-	cout << endl << "ISBN: ";
-	getline(cin, tempisbn);
-	temparray[size].setISBN(tempisbn);
-	cout << endl << "Author: ";
-	getline(cin, tempauthor);
-	temparray[size].setAuthor(tempauthor);
-	cout << endl << "Publisher: ";
-	getline(cin, temppublisher);
-	temparray[size].setPublisher(temppublisher);
-	cout << endl << "Date added: ";
-	getline(cin, tempdate);
-	temparray[size].setDateAdded(tempdate);
-	cout << endl << "Retail Price: ";
-	cin >> tempretail;
-	cin.ignore();
-	temparray[size].setRetail(tempretail);
-	cout << endl << "Wholesale Price: ";
-	cin >> tempwholesale;
-	temparray[size].setWholeSale(tempwholesale);
-	cout << endl << "Quantity: ";
-	cin >> tempquantity;
-	temparray[size].setQuantity(tempquantity);
+	std::cout << "Title: ";
+	std::getline(std::cin, temptitle);
+	temparray[arraySize].setTitle(temptitle);
+	std::cout << endl << "ISBN: ";
+	std::getline(std::cin, tempisbn);
+	temparray[arraySize].setISBN(tempisbn);
+	std::cout << endl << "Author: ";
+	std::getline(std::cin, tempauthor);
+	temparray[arraySize].setAuthor(tempauthor);
+	std::cout << endl << "Publisher: ";
+	std::getline(std::cin, temppublisher);
+	temparray[arraySize].setPublisher(temppublisher);
+	std::cout << endl << "Date added: ";
+	std::getline(std::cin, tempdate);
+	temparray[arraySize].setDateAdded(tempdate);
+	std::cout << endl << "Retail Price: ";
+	std::cin >> tempretail;
+	std::cin.ignore();
+	temparray[arraySize].setRetail(tempretail);
+	std::cout << endl << "Wholesale Price: ";
+	std::cin >> tempwholesale;
+	temparray[arraySize].setWholeSale(tempwholesale);
+	std::cout << endl << "Quantity: ";
+	std::cin >> tempquantity;
+	temparray[arraySize].setQuantity(tempquantity);
 
-    array = temparray;
+    bookArray = temparray;
 	//debug to test added element
 
 	/*cout << array[size].getTitle() << std::endl;
@@ -187,7 +233,181 @@ void addBook()
 	//-debug-*/
 
 	//update global size value
-	size = newsize;
+	arraySize = newsize;
+	output();
 
+}
+// outputs data from existing bookArray to books.txt
 
+//place function call at the end of addBook() to ensure up-to-date info
+
+//and wherever else a full array-to-file dump is necessary
+
+void deleteBook()
+{
+	int deleteRepeat = 0;
+	int deleteSelect = 0;
+	do {
+		//grabbed prompt for search from main()
+		string deleteQuery;
+		std::cout << "Please enter title or ISBN to delete: " << std::endl;
+		cin.ignore();
+		std::getline(cin, deleteQuery);
+		//function calls
+		int deleteLocation;
+		//should display all info of match, better for user interactivity, I guess
+		//DEBUG std::cout << "this is a debug statement" << std::endl;
+		deleteLocation = displayBook(searchBook(deleteQuery));
+		if (deleteLocation != -1)
+		{
+			int newQuant; //For case 2
+			cout << "Please select:" << endl;
+			cout << "1) Remove all copies of " << bookArray[deleteLocation].getTitle() << endl;
+			cout << "2) Set new quantity of " << bookArray[deleteLocation].getTitle() << endl;
+			cout << "3) Cancel...";
+			switch (deleteSelect)
+			{
+			case 1:
+				cout << "Removing all copies..." << endl;
+				bookArray[deleteLocation].setQuantity(0);
+				cout << "All copies removed." << endl;
+				break;
+			case 2:
+				cout << "Please enter new inventory quantity:";
+				cin >> newQuant;
+				cin.ignore();
+				cout << "Placing " << newQuant << " copies of " << bookArray[deleteLocation].getTitle() << " into inventory.." << endl;
+				bookArray[deleteLocation].setQuantity(newQuant);
+				cout << "Inventory updated with " << newQuant << " copies of " << bookArray[deleteLocation].getTitle() << '.' << endl;
+				break;
+			case 3:
+				cout << "Cancelling..." << endl;
+				break;
+			}
+			cout << "Would you like to delete another entry? 1 = Y, 0 = N" << endl;
+			cin >> deleteRepeat;
+			cin.ignore();
+			output();
+		}
+
+	} while (deleteRepeat != 0);
+}
+
+void editBook()
+{
+	int repeat = 0;
+	do {
+		//grabbed prompt for search from main()
+		string editQuery;
+		std::cout << "Please enter title or ISBN to edit: " << std::endl;
+		cin.ignore();
+		std::getline(cin, editQuery);
+		//function calls
+		int editLocation;
+		//should display all info of match, better for user interactivity, I guess
+		//DEBUG std::cout << "this is a debug statement" << std::endl;
+		editLocation = displayBook(searchBook(editQuery));
+
+		if (editLocation != -1)
+		{
+			int editSelect;
+			std::cout << "Please select attribute to edit: " << endl;
+			cout << "1) Title" << endl;
+			cout << "2) ISBN" << endl;
+			cout << "3) Author" << endl;
+			cout << "4) Publisher" << endl;
+			cout << "5) Date added" << endl;
+			cout << "6) Retail Price" << endl;
+			cout << "7) Wholesale price" << endl;
+			cout << "8) Quantity in inventory" << endl;
+			cout << "9) Multiple or all attributes" << endl;
+			cout << "0) Cancel..." << endl;
+			cin >> editSelect;
+			cin.ignore();
+			//declaring temp vars for editing input
+			string newTitle, newISBN, newAuthor, newPublisher, newDateAdded;
+			double newRetail, newWholeSale;
+			int newQuantity;
+			switch (editSelect)
+			{
+			case 1:
+				cout << "Please enter new title: ";
+				getline(cin, newTitle);
+				bookArray[editLocation].setTitle(newTitle);
+				break;
+			case 2:
+				cout << "Please enter new ISBN: ";
+				getline(cin, newISBN);
+				bookArray[editLocation].setISBN(newISBN);
+				break;
+			case 3:
+				cout << "Please enter new author: ";
+				getline(cin, newAuthor);
+				bookArray[editLocation].setAuthor(newAuthor);
+				break;
+			case 4:
+				cout << "Please enter new publisher: ";
+				getline(cin, newPublisher);
+				bookArray[editLocation].setPublisher(newPublisher);
+				break;
+			case 5:
+				cout << "Please enter new date added: ";
+				getline(std::cin, newDateAdded);
+				bookArray[editLocation].setDateAdded(newDateAdded);
+				break;
+			case 6:
+				cout << "Please enter new retail price (in <dollars>.<cents> format): ";
+				cin >> newRetail;
+				bookArray[editLocation].setRetail(newRetail);
+				break;
+			case 7:
+				cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
+				cin >> newWholeSale;
+				bookArray[editLocation].setWholeSale(newWholeSale);
+				break;
+			case 8:
+				cout << "Please enter updated amount in inventory: ";
+				cin >> newQuantity;
+				bookArray[editLocation].setQuantity(newQuantity);
+				break;
+			case 9:
+				//feedback to differentiate from case 1
+				cout << "Now editing all attributes..." << endl;
+
+				cout << "Please enter new title: ";
+				getline(cin, newTitle);
+				cout << "Please enter new ISBN: ";
+				getline(cin, newISBN);
+				cout << "Please enter new author: ";
+				getline(cin, newAuthor);
+				cout << "Please enter new publisher: ";
+				getline(cin, newPublisher);
+				cout << "Please enter new date added: ";
+				getline(cin, newDateAdded);
+				cout << "Please enter new retail price (in <dollars>.<cents> format): ";
+				cin >> newRetail;
+				cin.ignore();
+				cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
+				cin >> newWholeSale;
+				cout << "Please enter new quantity in inventory: ";
+				cin >> newQuantity;
+				bookArray[editLocation].setTitle(newTitle);
+				bookArray[editLocation].setISBN(newISBN);
+				bookArray[editLocation].setAuthor(newAuthor);
+				bookArray[editLocation].setPublisher(newPublisher);
+				bookArray[editLocation].setDateAdded(newDateAdded);
+				bookArray[editLocation].setRetail(newRetail);
+				bookArray[editLocation].setWholeSale(newWholeSale);
+				bookArray[editLocation].setQuantity(newQuantity);
+			case 0:
+				cout << "Cancelling..." << endl;
+				break;
+			}
+			//calls output info to update books.txt
+			output();
+			//prompts for value to decide whether to exit do-while loop
+			cout << "Enter 1 to edit another entry, or enter 0 to exit editing module." << endl;
+			cin >> repeat;
+		}
+	}while (repeat != 0);
 }
