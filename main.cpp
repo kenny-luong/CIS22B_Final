@@ -4,12 +4,13 @@
 #include <string>
 #include <fstream>
 #include "book.h"
+#include <cstdlib>
 
 /*********************
 **		To-Do List
 **
 ** - Rename variables. Some of them are unclear.
-** -
+** - Fix cin.ignore()
 **********************/
 
 using namespace std;
@@ -20,19 +21,22 @@ int sizeOfArray();
 void addBook();
 void editBook();
 void deleteBook();
+void saveBook();
+void loadBook();
+void loadBook();
 
 int arraySize = sizeOfArray();
 Book *tempBook = new Book;
 
 Book *bookArray = new Book[arraySize];
 
-void loadBook();
+
 
 //note:changed displayBook() return type to be able to determine whether editBook() can continue
 //displayBook() now returns the location/not-found flag, for purpose see editBook()
 //-William
 
-int displayBook(int i) {
+void displayBook(int i) {
     if (i == -1) {
     	std::cout << "Book was not found." << std::endl;
     } else {
@@ -46,7 +50,6 @@ int displayBook(int i) {
 	    std::cout << setw(25) << left << "Quantity in inventory:" << setw(20) << right << bookArray[i].getQuantity() << std::endl;
     }
 	//added return
-	return i;
 }
 
 int searchBook(std::string searchCriteria) {
@@ -62,24 +65,45 @@ int searchBook(std::string searchCriteria) {
 //-----------------MAIN-------------------
 //----------------------------------------
 int main () {
-    loadBook();
-   //tests search module
-	cout << "-----------NOW TESTING SEARCH MODULE----------" << endl;
-	std::string input;
-    std::cout << "Search by ISBN or title: " << std::endl;
-    std::getline(cin, input);
-
-    displayBook(searchBook(input));
-	//tests add module
-	cout << "----------NOW TESTING ADD MODULE----------" << endl;
-	addBook();
-	//tests edit module
-	cout << "----------NOW TESTING EDIT MODULE----------" << endl;
-	editBook();
-	//tests delete module
-	cout << "----------NOW TESTING DELETE MODULE----------" << endl;
-	deleteBook();
-	system("pause");
+	loadBook();
+    std::cout << "Serendipity Booksellers\n";
+    std::cout << "Inventory Database\n" << endl;
+    std::cout << "1. Look up a book\n";
+    std::cout << "2. Add a book\n";
+    std::cout <<"3. Edit a book\n";
+    std::cout <<"4. Delete a book\n";
+    std::cout <<"5. Close\n" << endl;
+    std::cout <<"Enter your choice: ";
+    int choice;
+    cin >> choice;
+    cin.ignore();
+	system("CLS");
+    switch (choice) {
+    	case 1: { // look up a book
+    		
+    		std::string query;
+    		std::cout << "Enter the title or ISBN of the book: ";
+    		std::getline(std::cin, query);
+    		displayBook(searchBook(query));
+    	}
+    		break;
+    	case 2: { // Add a book
+    		addBook();
+    	}
+    		break;
+    	case 3: { // Edit a book
+    		editBook();
+    	}
+    		break;
+    	case 4: {
+    		deleteBook();
+    	}
+    		break;
+    	case 5:
+    		break;
+    	default:
+    		break;
+    }
 }
 
 void loadBook() {
@@ -150,7 +174,7 @@ int sizeOfArray() {
     inputFile.close();
     return counter/8;
 }
-void output()
+void saveBook()
 {
 	ofstream output;
 	output.open("books.txt");
@@ -165,7 +189,7 @@ void output()
 		output << bookArray[count].getWholeSale() << endl;
 		output << bookArray[count].getQuantity() << endl;
 	}
-
+    output.close();
 }
 
 void addBook()
@@ -234,8 +258,8 @@ void addBook()
 
 	//update global size value
 	arraySize = newsize;
-	output();
-
+	saveBook();
+	displayBook(arraySize-1);
 }
 // outputs data from existing bookArray to books.txt
 
@@ -251,20 +275,20 @@ void deleteBook()
 		//grabbed prompt for search from main()
 		string deleteQuery;
 		std::cout << "Please enter title or ISBN to delete: " << std::endl;
-		cin.ignore();
+//		cin.ignore();
 		std::getline(cin, deleteQuery);
 		//function calls
 		int deleteLocation;
 		//should display all info of match, better for user interactivity, I guess
 		//DEBUG std::cout << "this is a debug statement" << std::endl;
-		deleteLocation = displayBook(searchBook(deleteQuery));
+		deleteLocation = searchBook(deleteQuery);
 		if (deleteLocation != -1)
 		{
 			int newQuant; //For case 2
 			cout << "Please select:" << endl;
 			cout << "1) Remove all copies of " << bookArray[deleteLocation].getTitle() << endl;
-			cout << "2) Set new quantity of " << bookArray[deleteLocation].getTitle() << endl;
-			cout << "3) Cancel...";
+			cout << "2) Return to previous screen"; // change line
+			cin >> deleteSelect;
 			switch (deleteSelect)
 			{
 			case 1:
@@ -273,25 +297,23 @@ void deleteBook()
 				cout << "All copies removed." << endl;
 				break;
 			case 2:
-				cout << "Please enter new inventory quantity:";
-				cin >> newQuant;
-				cin.ignore();
-				cout << "Placing " << newQuant << " copies of " << bookArray[deleteLocation].getTitle() << " into inventory.." << endl;
-				bookArray[deleteLocation].setQuantity(newQuant);
-				cout << "Inventory updated with " << newQuant << " copies of " << bookArray[deleteLocation].getTitle() << '.' << endl;
-				break;
-			case 3:
 				cout << "Cancelling..." << endl;
 				break;
 			}
 			cout << "Would you like to delete another entry? 1 = Y, 0 = N" << endl;
 			cin >> deleteRepeat;
 			cin.ignore();
-			output();
+			saveBook();
+		} else {
+            cout << "This is not working" << endl;
 		}
 
 	} while (deleteRepeat != 0);
 }
+
+/**********
+** Check input for editBook()
+***********/
 
 void editBook()
 {
@@ -300,13 +322,13 @@ void editBook()
 		//grabbed prompt for search from main()
 		string editQuery;
 		std::cout << "Please enter title or ISBN to edit: " << std::endl;
-		cin.ignore();
+//		cin.ignore();
 		std::getline(cin, editQuery);
 		//function calls
 		int editLocation;
 		//should display all info of match, better for user interactivity, I guess
 		//DEBUG std::cout << "this is a debug statement" << std::endl;
-		editLocation = displayBook(searchBook(editQuery));
+		editLocation = searchBook(editQuery);
 
 		if (editLocation != -1)
 		{
@@ -402,12 +424,14 @@ void editBook()
 			case 0:
 				cout << "Cancelling..." << endl;
 				break;
-			}
+			} 
 			//calls output info to update books.txt
-			output();
+			saveBook();
 			//prompts for value to decide whether to exit do-while loop
 			cout << "Enter 1 to edit another entry, or enter 0 to exit editing module." << endl;
 			cin >> repeat;
-		}
+		}else {
+				std::cout << "I didn't even try." << std::endl;
+			}
 	}while (repeat != 0);
 }
