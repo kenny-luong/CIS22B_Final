@@ -1,0 +1,32 @@
+Harry Potter
+12321321
+JK Rowling
+Publisher
+04021994
+24.99
+12.99
+5
+Book2
+ISBN2
+Author2
+Publisher2
+03072016
+24.99
+15.99
+246
+Book3
+ISBN3
+Author3
+Publisher3
+03062016
+24.99
+2.99
+8
+Book4
+ISBN4
+Author4
+Publisher4
+03062016
+29.99
+2.99
+0
