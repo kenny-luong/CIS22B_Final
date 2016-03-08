@@ -6,6 +6,14 @@
 #include "book.h"
 #include <cstdlib>
 
+/********************************************
+**					READ-ME
+**
+** Please try to write your code as clean as possible.
+** The code itself should describe its process and variable names should be descriptive enough to not need comments.
+** Of course there will be exceptions but just try to write your code such that it doesn't need comments.
+*********************************************/
+
 /*********************
 **		Functional To-Do List
 **
@@ -17,7 +25,8 @@
 ** - create interface and code cashier functionality
 ** - DEFINE REPORT FUNCTIONS [AT VERY BOTTOM]
 ** - Need to include default options for all switch statements.
-** - Create method to sort. Will probably need to use templates for that.
+** - Create method to sort by quantity, retail, etc... Will probably need to use templates for that.
+** - Create a method that actually stores purchase information. To be used with cashier module.
 **********************
 **   Cosmetic To-Do List - gotta make dat shit pretty
 **  [x] main menu
@@ -60,40 +69,6 @@ Book *tempBook = new Book;
 
 Book *bookArray = new Book[arraySize];
 
-
-
-//note:changed displayBook() return type to be able to determine whether editBook() can continue
-//displayBook() now returns the location/not-found flag, for purpose see editBook()
-//-William
-
-void displayBook(int i) {
-	if (i == -1) {
-		std::cout << "Book was not found." << std::endl;
-	}
-	else {
-		
-		std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
-		std::cout << setw(25) << left << "ISBN:" << setw(20) << right << bookArray[i].getISBN() << std::endl;
-		std::cout << setw(25) << left << "Author:" << setw(20) << right << bookArray[i].getAuthor() << std::endl;
-		std::cout << setw(25) << left << "Publisher:" << setw(20) << right << bookArray[i].getPublisher() << std::endl;
-		std::cout << setw(25) << left << "Date Added:" << setw(20) << right << bookArray[i].getDateAdded() << std::endl;
-		std::cout << setw(25) << left << "Retail Price:" << setw(20) << right << bookArray[i].getRetail() << std::endl;
-		std::cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << std::endl;
-		std::cout << setw(25) << left << "Quantity in inventory:" << setw(20) << right << bookArray[i].getQuantity() << std::endl;
-		std::cout << setfill(' ');
-	}
-	//added return
-}
-
-int searchBook(std::string searchCriteria) {
-	for (int i = 0; i < arraySize; i++) {
-		if (searchCriteria == bookArray[i].getTitle() || searchCriteria == bookArray[i].getISBN()) {
-			return i;
-		}
-	}
-	return -1;
-}
-
 //----------------------------------------
 //-----------------MAIN-------------------
 //----------------------------------------
@@ -132,6 +107,37 @@ int main() {
 		}
 	} while (x == 1);
 }
+
+// This function is meant to actually display the contents of the array we've loaded in loadBook.
+void displayBook(int i) {
+	if (i == -1) {
+		std::cout << "Book was not found." << std::endl;
+	}
+	else {
+		
+		std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
+		std::cout << setw(25) << left << "ISBN:" << setw(20) << right << bookArray[i].getISBN() << std::endl;
+		std::cout << setw(25) << left << "Author:" << setw(20) << right << bookArray[i].getAuthor() << std::endl;
+		std::cout << setw(25) << left << "Publisher:" << setw(20) << right << bookArray[i].getPublisher() << std::endl;
+		std::cout << setw(25) << left << "Date Added:" << setw(20) << right << bookArray[i].getDateAdded() << std::endl;
+		std::cout << setw(25) << left << "Retail Price:" << setw(20) << right << bookArray[i].getRetail() << std::endl;
+		std::cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << std::endl;
+		std::cout << setw(25) << left << "Quantity in inventory:" << setw(20) << right << bookArray[i].getQuantity() << std::endl;
+		std::cout << setfill(' ');
+	}
+}
+
+// This function is strictly to return the position of the book within the array loaded with loadBook().
+
+int searchBook(std::string searchCriteria) {
+	for (int i = 0; i < arraySize; i++) {
+		if (searchCriteria == bookArray[i].getTitle() || searchCriteria == bookArray[i].getISBN()) {
+			return i;
+		}
+	}
+	return -1;
+}
+
 
 void inventoryMenu()
 {
@@ -247,6 +253,8 @@ void reportMenu()
 	} while (reportExit == 0);
 }
 
+// This needs to be at the beginning of main. No exceptions. This loads the information from our database file into an array.
+
 void loadBook() {
 	std::ifstream bookDatabase;
 	bookDatabase.open("books.txt", std::ios::in);
@@ -303,6 +311,8 @@ void loadBook() {
 	bookDatabase.close();
 }
 
+// This function is what will determine the initial size of our array.
+
 int sizeOfArray() {
 	std::ifstream inputFile;
 
@@ -316,6 +326,10 @@ int sizeOfArray() {
 	inputFile.close();
 	return counter / 8;
 }
+
+// This function will take the contents of the current defined array and rewrite our database file with the contents of the array.
+// WIll need to include this at the end of anything that modifies the array.
+
 void saveBook()
 {
 	ofstream output;
@@ -333,6 +347,8 @@ void saveBook()
 	}
 	output.close();
 }
+
+// This function creates a new array of a new size and copies the content of our current array over. 
 
 void addBook()
 {
