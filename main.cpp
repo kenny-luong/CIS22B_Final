@@ -16,6 +16,8 @@
 ** - fix inventoryMenu() exiting directly to main() after executing any function [done]
 ** - create interface and code cashier functionality
 ** - DEFINE REPORT FUNCTIONS [AT VERY BOTTOM]
+** - Need to include default options for all switch statements.
+** - Create method to sort. Will probably need to use templates for that.
 **********************
 **   Cosmetic To-Do List - gotta make dat shit pretty
 **  [x] main menu
