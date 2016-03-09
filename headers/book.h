@@ -52,6 +52,7 @@ class Book {
 		double getRetail();
 		double getWholeSale();
 		int getQuantity();
+		bool isOlder(string);
 };
 
-#endif // BOOK_H_INCLUDED
+#endif
