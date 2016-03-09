@@ -37,6 +37,8 @@ int sizeOfArray();
 void inventoryMenu();
 void cashierMenu();
 void reportMenu();
+//cashier protoype
+void addToCart();
 //inventory prototypes
 void addBook();
 void editBook();
@@ -55,9 +57,10 @@ void quantityReport();
 
 
 int arraySize = sizeOfArray();
+int cartSize = 0;
 Book *tempBook = new Book;
-
 Book *bookArray = new Book[arraySize];
+Book *cart = newCart[cartSize];
 
 
 
@@ -130,6 +133,28 @@ int main() {
 	}
 	} while (x = 1);
 }
+
+void addToCart(int position) {
+	if (position != -1) {
+		int newCartSize = cartSize + 1;
+		
+		Book *tempCart = new Book[newCartSize];
+		
+		for (int count = 0; count < cartSize; count++) {
+			tempCart[count] = cart[count];
+		}
+		
+		tempCart[newCartSize-1] = bookArray[position];
+		
+		delete [] cart;
+
+		cartSize = newCartSize;
+		cart = tempCart;
+	} else {
+		cout << "Unable to add to cart." << endl;
+	}
+}
+
 
 void inventoryMenu()
 {
