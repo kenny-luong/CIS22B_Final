@@ -7,12 +7,12 @@
 #include <cstdlib>
 
 /********************************************
-**					READ-ME
-**
-** Please try to write your code as clean as possible.
-** The code itself should describe its process and variable names should be descriptive enough to not need comments.
-** Of course there will be exceptions but just try to write your code such that it doesn't need comments.
-*********************************************/
+ **					READ-ME
+ **
+ ** Please try to write your code as clean as possible.
+ ** The code itself should describe its process and variable names should be descriptive enough to not need comments.
+ ** Of course there will be exceptions but just try to write your code such that it doesn't need comments.
+ *********************************************/
 
 /*********************
 **		Functional To-Do List
@@ -23,9 +23,9 @@
 ** - fix loop not finishing in inventoryMenu() and reportMenu()----> get rid of system("pause")s under every function call in switch [done]
 ** - fix inventoryMenu() exiting directly to main() after executing any function [done]
 ** - create interface and code cashier functionality
-** - DEFINE REPORT FUNCTIONS [AT VERY BOTTOM]
+** - DEFINE REPORT FUNCTIONS [AT VERY BOTTOM] [done]
 ** - Need to include default options for all switch statements.
-** - Create method to sort by quantity, retail, etc... Will probably need to use templates for that.
+** - Create method to sort by quantity, retail, etc... Will probably need to use templates for that. [done]
 ** - Create a method that actually stores purchase information. To be used with cashier module.
 **********************
 **   Cosmetic To-Do List - gotta make dat shit pretty
@@ -70,7 +70,7 @@ int arraySize = sizeOfArray();
 int cartSize = 0;
 Book *tempBook = new Book;
 Book *bookArray = new Book[arraySize];
-Book *cart = newCart[cartSize];
+//Book *cart = newCart[cartSize];
 
 //----------------------------------------
 //-----------------MAIN-------------------
@@ -117,12 +117,12 @@ void displayBook(int i) {
 		std::cout << "Book was not found." << std::endl;
 	}
 	else {
-		
+
 		std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
 		std::cout << setw(25) << left << "ISBN:" << setw(20) << right << bookArray[i].getISBN() << std::endl;
 		std::cout << setw(25) << left << "Author:" << setw(20) << right << bookArray[i].getAuthor() << std::endl;
 		std::cout << setw(25) << left << "Publisher:" << setw(20) << right << bookArray[i].getPublisher() << std::endl;
-		std::cout << setw(25) << left << "Date Added:" << setw(20) << right << bookArray[i].getDateAdded() << std::endl;
+		std::cout << setw(25) << left << "Date Added (mmddyyyy):" << setw(20) << right << bookArray[i].getDateAdded() << std::endl;
 		std::cout << setw(25) << left << "Retail Price:" << setw(20) << right << bookArray[i].getRetail() << std::endl;
 		std::cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << std::endl;
 		std::cout << setw(25) << left << "Quantity in inventory:" << setw(20) << right << bookArray[i].getQuantity() << std::endl;
@@ -142,26 +142,26 @@ int searchBook(std::string searchCriteria) {
 }
 
 
-void addToCart(int position) {
-	if (position != -1) {
-		int newCartSize = cartSize + 1;
-		
-		Book *tempCart = new Book[newCartSize];
-		
-		for (int count = 0; count < cartSize; count++) {
-			tempCart[count] = cart[count];
-		}
-		
-		tempCart[newCartSize-1] = bookArray[position];
-		
-		delete [] cart;
-
-		cartSize = newCartSize;
-		cart = tempCart;
-	} else {
-		cout << "Unable to add to cart." << endl;
-	}
-}
+//void addToCart(int position) {
+//	if (position != -1) {
+//		int newCartSize = cartSize + 1;
+//
+//		Book *tempCart = new Book[newCartSize];
+//
+//		for (int count = 0; count < cartSize; count++) {
+//			tempCart[count] = cart[count];
+//		}
+//
+//		tempCart[newCartSize - 1] = bookArray[position];
+//
+//		delete[] cart;
+//
+//		cartSize = newCartSize;
+//		cart = tempCart;
+//	}else {
+//		cout << "Unable to add to cart." << endl;
+//	}
+//}
 
 
 void inventoryMenu()
@@ -594,7 +594,7 @@ void editBook()
 				getline(cin, newAuthor);
 				cout << "Please enter new publisher: ";
 				getline(cin, newPublisher);
-				cout << "Please enter new date added: ";
+				cout << "Please enter new date added (mmddyyyy): ";
 				getline(cin, newDateAdded);
 				cout << "Please enter new retail price (in <dollars>.<cents> format): ";
 				cin >> newRetail;
@@ -636,6 +636,7 @@ void editBook()
 
 void bookSort(string sortBy) {
 	int start, maxIndex;
+	Book tempBook;
 	if (sortBy == "quantity") {
 		int maxVal;
 		for (start = 0; start < (arraySize - 1); start++) {
@@ -647,8 +648,41 @@ void bookSort(string sortBy) {
 					maxIndex = index;
 				}
 			}
+			tempBook = bookArray[maxIndex];
 			bookArray[maxIndex]= bookArray[start];
-			bookArray[start].setQuantity(maxVal);
+			bookArray[start] = tempBook;
+		}
+	}
+	else if (sortBy == "wholesale") {
+		double maxVal;
+		for (start = 0; start < (arraySize - 1); start++) {
+			maxIndex = start;
+			maxVal = bookArray[start].getWholeSale();
+			for (int index = start + 1; index < arraySize; index++) {
+				if (bookArray[index].getWholeSale() > maxVal) {
+					maxVal = bookArray[index].getWholeSale();
+					maxIndex = index;
+				}
+			}
+			tempBook = bookArray[maxIndex];
+			bookArray[maxIndex] = bookArray[start];
+			bookArray[start] = tempBook;
+		}
+	}
+	else if (sortBy == "age") {
+		string oldestDate;
+		for (start = 0; start < (arraySize - 1); start++) {
+			maxIndex = start;
+			oldestDate = bookArray[start].getDateAdded();
+			for (int index = start + 1; index < arraySize; index++) {
+				if (bookArray[index].isOlder(oldestDate)) {
+					oldestDate = bookArray[index].getDateAdded();
+					maxIndex = index;
+				}
+			}
+			tempBook = bookArray[maxIndex];
+			bookArray[maxIndex] = bookArray[start];
+			bookArray[start] = tempBook;
 		}
 	}
 }
@@ -707,16 +741,37 @@ void quantityReport()
 		std::cout << setw(25) << left << "Quantity:" << setw(20) << right << bookArray[i].getQuantity() << std::endl;
 		cout << "==================================================" << endl;
 	}
+	cout << setfill(' ');
 	cout << endl << "Press enter to return to the Reports menu";
 	getline(cin, emptyStr);
 	system("cls");
 }
 void costReport()
 {
-
+	system("cls");
+	bookSort("wholesale");
+	for (int i = 0; i < arraySize; i++) {
+		std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
+		std::cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << std::endl;
+		cout << "==================================================" << endl;
+	}
+	cout << setfill(' ');
+	cout << endl << "Press enter to return to the Reports menu";
+	getline(cin, emptyStr);
+	system("cls");
 }
 void ageReport()
 {
-
+	system("cls");
+	bookSort("age");
+	for (int i = 0; i < arraySize; i++) {
+		std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
+		std::cout << setw(25) << left << "Date Added (mmddyyyy):" << setw(20) << right << bookArray[i].getDateAdded() << std::endl;
+		cout << "==================================================" << endl;
+	}
+	cout << setfill(' ');
+	cout << endl << "Press enter to return to the Reports menu";
+	getline(cin, emptyStr);
+	system("cls");
 }
 
