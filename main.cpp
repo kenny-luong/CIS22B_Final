@@ -6,16 +6,27 @@
 #include "book.h"
 #include <cstdlib>
 
+/********************************************
+**					READ-ME
+**
+** Please try to write your code as clean as possible.
+** The code itself should describe its process and variable names should be descriptive enough to not need comments.
+** Of course there will be exceptions but just try to write your code such that it doesn't need comments.
+*********************************************/
+
 /*********************
 **		Functional To-Do List
 **
 ** - Rename variables. Some of them are unclear. [Mostly done]
 ** - Fix cin.ignore()
 ** - separate menus and clean up main() [done]
-** - fix loop not finishing in inventoryMenu() and reportMenu()----> get rid of system("pause")s under every function call in switch
-** - fix inventoryMenu() exiting directly to main() after executing any function
+** - fix loop not finishing in inventoryMenu() and reportMenu()----> get rid of system("pause")s under every function call in switch [done]
+** - fix inventoryMenu() exiting directly to main() after executing any function [done]
 ** - create interface and code cashier functionality
 ** - DEFINE REPORT FUNCTIONS [AT VERY BOTTOM]
+** - Need to include default options for all switch statements.
+** - Create method to sort by quantity, retail, etc... Will probably need to use templates for that.
+** - Create a method that actually stores purchase information. To be used with cashier module.
 **********************
 **   Cosmetic To-Do List - gotta make dat shit pretty
 **  [x] main menu
@@ -46,15 +57,14 @@ void deleteBook();
 void saveBook();
 void loadBook();
 //report prototypes
-void titleReport();
-void isbnReport();
-void authorReport();
-void publisherReport();
-void dateAddedReport();
+void inventoryReport();
+void wholesaleReport();
 void retailReport();
-void wholeSaleReport();
 void quantityReport();
+void costReport();
+void ageReport();
 
+string emptyStr; //used for menu navigation
 
 int arraySize = sizeOfArray();
 int cartSize = 0;
@@ -62,12 +72,46 @@ Book *tempBook = new Book;
 Book *bookArray = new Book[arraySize];
 Book *cart = newCart[cartSize];
 
+//----------------------------------------
+//-----------------MAIN-------------------
+//----------------------------------------
+int main() {
+	loadBook();
+	int x = 1;
+	int mainChoice = 0;
+	do{
+		system("cls");
+		std::cout << endl << endl << endl << endl << endl;
+		std::cout << setw(50) << "Serendipity Booksellers" << endl;
+		std::cout << setw(43) << "Main Menu" << endl;
+		std::cout << endl;
+		std::cout << setw(49) << "1. Inventory database" << endl;
+		std::cout << setw(48) << "2. Cashier interface" << endl;
+		std::cout << setw(49) << "3. Generate report(s)" << endl;
+		std::cout << setw(46) << "4. Exit program..." << endl;
+		std::cout << endl << endl;
+		std::cout << setw(47) << "Enter your choice: ";
+		cin >> mainChoice;
+		system("cls");
 
+		switch (mainChoice)
+		{
+			case 1:
+				inventoryMenu();
+				break;
+			case 2:
+				cashierMenu();
+				break;
+			case 3:
+				reportMenu();
+				break;
+			case 4:
+				return 0;
+		}
+	} while (x == 1);
+}
 
-//note:changed displayBook() return type to be able to determine whether editBook() can continue
-//displayBook() now returns the location/not-found flag, for purpose see editBook()
-//-William
-
+// This function is meant to actually display the contents of the array we've loaded in loadBook.
 void displayBook(int i) {
 	if (i == -1) {
 		std::cout << "Book was not found." << std::endl;
@@ -84,8 +128,9 @@ void displayBook(int i) {
 		std::cout << setw(25) << left << "Quantity in inventory:" << setw(20) << right << bookArray[i].getQuantity() << std::endl;
 		std::cout << setfill(' ');
 	}
-	//added return
 }
+
+// This function is strictly to return the position of the book within the array loaded with loadBook().
 
 int searchBook(std::string searchCriteria) {
 	for (int i = 0; i < arraySize; i++) {
@@ -96,43 +141,6 @@ int searchBook(std::string searchCriteria) {
 	return -1;
 }
 
-//----------------------------------------
-//-----------------MAIN-------------------
-//----------------------------------------
-int main() {
-	loadBook();
-	int x = 1; //handles menu repeat, NEED TO CHANGE
-	int mainChoice = 0;
-	do{
-	system("cls");
-	std::cout << endl << endl << endl << endl << endl;
-	std::cout << setw(50) << "Serendipity Booksellers" << endl;
-	std::cout << setw(43) << "Main Menu" << endl;
-	std::cout << endl;
-	std::cout << setw(49) << "1. Inventory database" << endl;
-	std::cout << setw(48) << "2. Cashier interface" << endl;
-	std::cout << setw(49) << "3. Generate report(s)" << endl;
-	std::cout << setw(46) << "4. Exit program..." << endl;
-	std::cout << endl << endl;
-	std::cout << setw(47) << "Enter your choice: ";
-	cin >> mainChoice;
-	system("cls");
-	switch (mainChoice)
-	{
-	case 1:
-		inventoryMenu();
-		break;
-	case 2:
-		cashierMenu();
-		break;
-	case 3:
-		reportMenu();
-		break;
-	case 4:
-		return 0;
-	}
-	} while (x = 1);
-}
 
 void addToCart(int position) {
 	if (position != -1) {
@@ -160,6 +168,7 @@ void inventoryMenu()
 {
 	int inventoryExit = 0;
 	do {
+		system("CLS");
 		std::cout << endl << endl << endl << endl << endl;
 		std::cout << setw(50) << "Serendipity Booksellers" << endl;
 		std::cout << setw(47) << "Inventory Database" << endl;
@@ -175,37 +184,43 @@ void inventoryMenu()
 		cin >> inventoryChoice;
 		cin.ignore();
 		system("CLS");
+
 		switch (inventoryChoice) {
-		case 1: { // look up a book
-			std::string query;
-			std::cout << "Enter the title or ISBN of the book: ";
-			std::getline(std::cin, query);
-			displayBook(searchBook(query));
-			system("pause");
-		}
+			case 1:{   // look up a book
+				std::string query;
+				std::cout << "Enter the title or ISBN of the book: ";
+				std::getline(std::cin, query);
+				displayBook(searchBook(query));
+				cout << endl << "Press enter to return to the inventory menu";
+				getline(cin, emptyStr);
 				break;
-		case 2: { // Add a book
-			addBook();
-			system("pause");
-		}
+			}
+			case 2:{  // Add a book
+				addBook();
+				cout << endl << "Press enter to return to the inventory menu";
+				getline(cin, emptyStr);
 				break;
-		case 3: { // Edit a book
-			editBook();
-			system("pause");
-		}
+			}
+				
+			case 3: { // Edit a book
+				editBook();
+				cout << endl << "Press enter to return to the inventory menu";
+				getline(cin, emptyStr);
 				break;
-		case 4: {
-			deleteBook();
-			system("pause");
-		}
+			}
+			case 4: { //Delete a book
+				deleteBook();
 				break;
-		case 5:
-			inventoryExit = 1;
-			break;
-		default:
-			break;
+			}
+			case 5: { //Exit back to the main menu
+				inventoryExit = 1;
+				break;
+			}
+			default: {
+				break;
+			}
 		}
-	} while (inventoryExit = 0);
+	} while (inventoryExit == 0);
 }
 
 void cashierMenu()
@@ -221,55 +236,49 @@ void reportMenu()
 		std::cout << setw(50) << "Serendipity Booksellers" << endl;
 		std::cout << setw(47) << "Report Generator" << endl;
 		std::cout << endl;
-		std::cout << setw(52) << "Select criteria with which" << endl;
-		std::cout << setw(53) << "to sort and generate a report" << endl;
+		std::cout << setw(47) << "Select the report" << endl;
+		std::cout << setw(49) << "you want to generate" << endl;
 		std::cout << endl;
-		std::cout << setw(37) << "1. Title" << endl;
-		std::cout << setw(36) << "2. ISBN" << endl;
-		std::cout << setw(38) << "3. Author" << endl;
-		std::cout << setw(41) << "4. Publisher" << endl;
-		std::cout << setw(42) << "5. Date added" << endl;
-		std::cout << setw(44) << "6. Retail price" << endl;
-		std::cout << setw(47) << "7. Wholesale Price" << endl;
-		std::cout << setw(53) << "8. Quantity in inventory" << endl;
-		std::cout << setw(38) << "9. Cancel" << endl;
+		std::cout << setw(47) << "1. Inventory Listing" << endl;
+		std::cout << setw(55) << "2. Inventory Wholesale Value" << endl;
+		std::cout << setw(52) << "3. Inventory Retail Value" << endl;
+		std::cout << setw(49) << "4. Listing by Quantity" << endl;
+		std::cout << setw(45) << "5. Listing by Cost" << endl;
+		std::cout << setw(44) << "6. Listing by Age" << endl;
+		std::cout << setw(49) << "7. Return to Main Menu" << endl;
 		std::cout << endl << endl;
 		std::cout << setw(47) << "Enter your choice: ";
 		int reportChoice = 0;
 		cin >> reportChoice;
+		cin.ignore();
 		switch (reportChoice)
 		{
-		case 1:
-			titleReport();
-			break;
-		case 2:
-			isbnReport();
-			break;
-		case 3:
-			authorReport();
-			break;
-		case 4:
-			publisherReport();
-			break;
-		case 5:
-			dateAddedReport();
-			break;
-		case 6:
-			retailReport();
-			break;
-		case 7:
-			wholeSaleReport();
-			break;
-		case 8:
-			quantityReport();
-			break;
-		case 9:
-			reportExit = 1;
-			break;
-
+			case 1:
+				inventoryReport();
+				break;
+			case 2:
+				wholesaleReport();
+				break;
+			case 3:
+				retailReport();
+				break;
+			case 4:
+				quantityReport();
+				break;
+			case 5:
+				costReport();
+				break;
+			case 6:
+				ageReport();
+				break;
+			case 7:
+				reportExit = 1;
+				break;
 		}
-	} while (reportExit = 0);
+	} while (reportExit == 0);
 }
+
+// This needs to be at the beginning of main. No exceptions. This loads the information from our database file into an array.
 
 void loadBook() {
 	std::ifstream bookDatabase;
@@ -327,6 +336,8 @@ void loadBook() {
 	bookDatabase.close();
 }
 
+// This function is what will determine the initial size of our array.
+
 int sizeOfArray() {
 	std::ifstream inputFile;
 
@@ -340,6 +351,10 @@ int sizeOfArray() {
 	inputFile.close();
 	return counter / 8;
 }
+
+// This function will take the contents of the current defined array and rewrite our database file with the contents of the array.
+// WIll need to include this at the end of anything that modifies the array.
+
 void saveBook()
 {
 	ofstream output;
@@ -357,6 +372,8 @@ void saveBook()
 	}
 	output.close();
 }
+
+// This function creates a new array of a new size and copies the content of our current array over. 
 
 void addBook()
 {
@@ -395,7 +412,7 @@ void addBook()
 	std::cout << endl << "Publisher: ";
 	std::getline(std::cin, temppublisher);
 	temparray[arraySize].setPublisher(temppublisher);
-	std::cout << endl << "Date added: ";
+	std::cout << endl << "Date added (mmddyyyy): ";
 	std::getline(std::cin, tempdate);
 	temparray[arraySize].setDateAdded(tempdate);
 	std::cout << endl << "Retail Price: ";
@@ -404,9 +421,11 @@ void addBook()
 	temparray[arraySize].setRetail(tempretail);
 	std::cout << endl << "Wholesale Price: ";
 	std::cin >> tempwholesale;
+	cin.ignore();
 	temparray[arraySize].setWholeSale(tempwholesale);
 	std::cout << endl << "Quantity: ";
 	std::cin >> tempquantity;
+	cin.ignore();
 	temparray[arraySize].setQuantity(tempquantity);
 
 	bookArray = temparray;
@@ -456,8 +475,9 @@ void deleteBook()
 			int newQuant; //For case 2
 			cout << "Please select:" << endl;
 			cout << "1) Remove all copies of " << bookArray[deleteLocation].getTitle() << endl;
-			cout << "2) Return to previous screen"; // change line
+			cout << "2) Return to previous screen" << endl; // change line
 			cin >> deleteSelect;
+			cin.ignore();
 			switch (deleteSelect)
 			{
 			case 1:
@@ -543,7 +563,7 @@ void editBook()
 				bookArray[editLocation].setPublisher(newPublisher);
 				break;
 			case 5:
-				cout << "Please enter new date added: ";
+				cout << "Please enter new date added (mmddyyyy): ";
 				getline(std::cin, newDateAdded);
 				bookArray[editLocation].setDateAdded(newDateAdded);
 				break;
@@ -614,36 +634,89 @@ void editBook()
 *****************************************
 ****************************************/
 
-
-void titleReport()
-{
-
+void bookSort(string sortBy) {
+	int start, maxIndex;
+	if (sortBy == "quantity") {
+		int maxVal;
+		for (start = 0; start < (arraySize - 1); start++) {
+			maxIndex = start;
+			maxVal = bookArray[start].getQuantity();
+			for (int index = start + 1; index < arraySize; index++) {
+				if (bookArray[index].getQuantity() > maxVal) {
+					maxVal = bookArray[index].getQuantity();
+					maxIndex = index;
+				}
+			}
+			bookArray[maxIndex]= bookArray[start];
+			bookArray[start].setQuantity(maxVal);
+		}
+	}
 }
-void isbnReport()
-{
 
+void inventoryReport()
+{
+	system("cls");
+	for (int i = 0; i < arraySize; i++) {
+		displayBook(i);
+		cout << "==================================================" << endl;
+	}
+	cout << endl << "Press enter to return to the Reports menu";
+	getline(cin, emptyStr);
+	system("cls");
 }
-void authorReport()
+void wholesaleReport()
 {
-
-}
-void publisherReport()
-{
-
-}
-void dateAddedReport()
-{
-
+	system("cls");
+	double totalWholesale=0;
+	for (int i = 0; i < arraySize; i++) {
+		std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
+		std::cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << std::endl;
+		totalWholesale += bookArray[i].getWholeSale()*bookArray[i].getQuantity();
+		cout << "==================================================" << endl;
+	}
+	cout << "==================================================" << endl;
+	cout << setw(25) << left << "Total Wholesale Value:" << setw(20) << right << totalWholesale << std::endl;
+	cout << setfill(' ');
+	cout << endl << "Press enter to return to the Reports menu";
+	getline(cin, emptyStr);
+	system("cls");
 }
 void retailReport()
 {
-
-}
-void wholeSaleReport()
-{
-
+	system("cls");
+	double totalRetail = 0;
+	for (int i = 0; i < arraySize; i++) {
+		std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
+		std::cout << setw(25) << left << "Retail Price:" << setw(20) << right << bookArray[i].getRetail() << std::endl;
+		totalRetail += bookArray[i].getRetail()*bookArray[i].getQuantity();
+		cout << "==================================================" << endl;
+	}
+	cout << "==================================================" << endl;
+	cout << setw(25) << left << "Total Retail Value:" << setw(20) << right << totalRetail << std::endl;
+	cout << setfill(' ');
+	cout << endl << "Press enter to return to the Reports menu";
+	getline(cin, emptyStr);
+	system("cls");
 }
 void quantityReport()
 {
+	system("cls");
+	bookSort("quantity");
+	for (int i = 0; i < arraySize; i++) {
+		std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
+		std::cout << setw(25) << left << "Quantity:" << setw(20) << right << bookArray[i].getQuantity() << std::endl;
+		cout << "==================================================" << endl;
+	}
+	cout << endl << "Press enter to return to the Reports menu";
+	getline(cin, emptyStr);
+	system("cls");
+}
+void costReport()
+{
 
 }
+void ageReport()
+{
+
+}
+
