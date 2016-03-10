@@ -14,7 +14,7 @@ Book::Book(string theTitle,
 		   string thePublisher,
 		   string theDateAdded,
 		   double theRetail,
-		   double, theWholeSale,
+		   double theWholeSale,
 		   int theQuantity) {
 	title = theTitle;
 	isbn = theISBN;
@@ -88,4 +88,22 @@ double Book::getWholeSale() {
 
 int Book::getQuantity() {
 	return quantity;
+}
+
+bool Book::isOlder(string b) {
+	if (stoi(dateAdded.substr(4, 4)) < stoi(b.substr(4, 4)))
+	{
+		return true;
+	}
+	else if (stoi(dateAdded.substr(4, 4)) == stoi(b.substr(4, 4))) {
+		if (stoi(dateAdded.substr(0, 2)) < stoi(b.substr(0, 2))) {
+			return true;
+		}
+		else if (stoi(dateAdded.substr(0, 2)) == stoi(b.substr(0, 2))) {
+			if (stoi(dateAdded.substr(2, 2)) < stoi(b.substr(2, 2))) {
+				return true;
+			}
+		}
+	}
+	return false;
 }
