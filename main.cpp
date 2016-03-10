@@ -72,6 +72,22 @@ Book *tempBook = new Book;
 Book *bookArray = new Book[arraySize];
 Book *cart = new Book[cartSize];
 
+template <class T>
+
+void addToArray (T &arrayName, int &arraySize) {
+		int newArraySize = arraySize + 1;
+		Book *tempArray = new Book[newArraySize];
+
+		for (int count = 0; count < arraySize; count++) {
+			tempArray[count] = arrayName[count];
+		}
+
+		delete [] arrayName;
+
+		arraySize = newArraySize;
+		arrayName = tempArray;
+}
+
 //----------------------------------------
 //-----------------MAIN-------------------
 //----------------------------------------
@@ -144,20 +160,8 @@ int searchBook(std::string searchCriteria) {
 
 void addToCart(int position) {
 	if (position != -1) {
-		int newCartSize = cartSize + 1;
-
-		Book *tempCart = new Book[newCartSize];
-
-		for (int count = 0; count < cartSize; count++) {
-			tempCart[count] = cart[count];
-		}
-
-		tempCart[newCartSize - 1] = bookArray[position];
-
-		delete[] cart;
-
-		cartSize = newCartSize;
-		cart = tempCart;
+		addToArray(cart, cartSize);
+		cart[cartSize-1] = bookArray[position];
 	} else {
 		cout << "Unable to add to cart." << endl;
 	}
@@ -377,83 +381,44 @@ void saveBook()
 
 void addBook()
 {
-	int newsize = arraySize + 1;
-	Book *temparray = new Book[newsize];
-	Book *garbage = new Book;
-	for (int count = 0; count < arraySize; count++)
-	{
-		if (!(count == arraySize)) {
-			temparray[count] = bookArray[count];
-		}
-		else {
-			temparray[count] = *garbage;
-		}
-	}
+	addToArray(bookArray, arraySize);
 
-	delete[] bookArray;
-
-
-	//temporary variables for text entry
-	//there's probably a cleaner way
 	string temptitle, tempisbn, tempauthor, temppublisher, tempdate;
 	double tempretail, tempwholesale;
 	int tempquantity;
 
-	//prompting and setting values to new entry
 	std::cout << "Title: ";
 	std::getline(std::cin, temptitle);
-	temparray[arraySize].setTitle(temptitle);
+	bookArray[arraySize-1].setTitle(temptitle);
 	std::cout << endl << "ISBN: ";
 	std::getline(std::cin, tempisbn);
-	temparray[arraySize].setISBN(tempisbn);
+	bookArray[arraySize-1].setISBN(tempisbn);
 	std::cout << endl << "Author: ";
 	std::getline(std::cin, tempauthor);
-	temparray[arraySize].setAuthor(tempauthor);
+	bookArray[arraySize-1].setAuthor(tempauthor);
 	std::cout << endl << "Publisher: ";
 	std::getline(std::cin, temppublisher);
-	temparray[arraySize].setPublisher(temppublisher);
-	std::cout << endl << "Date added (mmddyyyy): ";
+	bookArray[arraySize-1].setPublisher(temppublisher);
+	std::cout << endl << "Date added: ";
 	std::getline(std::cin, tempdate);
-	temparray[arraySize].setDateAdded(tempdate);
+	bookArray[arraySize-1].setDateAdded(tempdate);
 	std::cout << endl << "Retail Price: ";
 	std::cin >> tempretail;
 	std::cin.ignore();
-	temparray[arraySize].setRetail(tempretail);
+	bookArray[arraySize-1].setRetail(tempretail);
 	std::cout << endl << "Wholesale Price: ";
 	std::cin >> tempwholesale;
-	cin.ignore();
-	temparray[arraySize].setWholeSale(tempwholesale);
+	bookArray[arraySize-1].setWholeSale(tempwholesale);
 	std::cout << endl << "Quantity: ";
 	std::cin >> tempquantity;
-	cin.ignore();
-	temparray[arraySize].setQuantity(tempquantity);
+	bookArray[arraySize-1].setQuantity(tempquantity);
 
-	bookArray = temparray;
-	//debug to test added element
 
-	/*cout << array[size].getTitle() << std::endl;
-	cout << array[size].getISBN() << std::endl;
-	cout << array[size].getAuthor() << std::endl;
-	cout << array[size].getPublisher() << std::endl;
-	cout << array[size].getDateAdded() << std::endl;
-	cout << array[size].getRetail() << std::endl;
-	cout << array[size].getWholeSale() << std::endl;
-	cout << array[size].getQuantity() << std::endl;*/
-
-	//-debug-*/
-
-	//update global size value
-	arraySize = newsize;
 	saveBook();
 	cout << endl << endl;
 	cout << "----------------" << bookArray[arraySize - 1].getTitle() << " ADDED----------------" << endl;
 	displayBook(arraySize - 1);
 }
-// outputs data from existing bookArray to books.txt
-
-//place function call at the end of addBook() to ensure up-to-date info
-
-//and wherever else a full array-to-file dump is necessary
 
 void deleteBook()
 {
