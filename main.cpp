@@ -411,16 +411,16 @@ void cashierMenu()
 
 			counter = 0;
 			subtotal = 0;
-
+			saveBook();
+			delete[] cart;
+//			delete[] bookQuantity;
+			cartSize = 0;
+			cart = new Book[cartSize];
+//			bookQuantity = new int[cartSize];
 			cout << endl << "Press enter to return to the Cashier menu";
 			getline(cin, emptyStr);
 
-			saveBook();
-			delete[] cart;
-			delete[] bookQuantity;
-			cartSize = 0;
-			cart = new Book[cartSize];
-			bookQuantity = new int[cartSize];
+
 			break;
 		}
 		case 3: { //Exit back to the main menu
