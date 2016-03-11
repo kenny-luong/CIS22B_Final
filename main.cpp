@@ -21,16 +21,32 @@
 **
 ** - Rename variables. Some of them are unclear. [Mostly done]
 ** - Fix cin.ignore()
+** - separate menus and clean up main() [done]
+** - fix loop not finishing in inventoryMenu() and reportMenu()----> get rid of system("pause")s under every function call in switch [done]
+** - fix inventoryMenu() exiting directly to main() after executing any function [done]
 ** - create interface and code cashier functionality
+** - DEFINE REPORT FUNCTIONS [AT VERY BOTTOM] [done]
 ** - Need to include default options for all switch statements.
+** - Create method to sort by quantity, retail, etc... Will probably need to use templates for that. [done]
+** - Create a method that actually stores purchase information. To be used with cashier module.
 ** - Check inputs to make sure all inputs are valid or are caught
 ** - Implement try-catch in all opening of files.
 **********************
 **   Cosmetic To-Do List - gotta make dat shit pretty
-**  [ ] cashier menu
+**  [x] main menu
+**  [x] inventory menu
+**  [ ] cashier menu [DNE yet]
+**  [x] report menu
 **  [ ] addBook() [not really necessary]
 **  [ ] editBook() [not really necessary]
 **  [ ] deleteBook() [not really necessary]
+**  [x] displayBook()
+***********************/
+
+/**********************
+**		Error List
+**
+** 1. Missing books.txt
 ***********************/
 
 using namespace std;
@@ -49,7 +65,7 @@ void addBook();
 void editBook();
 void deleteBook();
 void saveBook();
-void loadBook();
+bool loadBook();
 //report prototypes
 void inventoryReport();
 void wholesaleReport();
@@ -96,7 +112,10 @@ string currentDateTime() {
 //-----------------MAIN-------------------
 //----------------------------------------
 int main() {
-	loadBook();
+
+	if (!loadBook()) {
+		return 0;
+	}
 	int x = 1;
 	int mainChoice = 0;
 	do{
@@ -233,10 +252,18 @@ void inventoryMenu()
 
 void cashierMenu()
 {
-	fstream log;
-	log.open("log.txt", ios::app);
-
 	int cashierExit = 0;
+	fstream log;
+	try {
+		log.open("log.txt", ios::app);
+		if (!log.is_open()) {
+			throw 1;
+		}
+	} catch (int x) {
+		cout << "Error: " << x << ". File could not be opened." << endl;
+		cashierExit = 1;
+	}
+
 	int *bookQuantity = new int[cartSize];
 	int quantity;
 	int counter = 0;
@@ -281,7 +308,6 @@ void cashierMenu()
 						bookQuantity[counter] = quantity;
 						counter++;
 					}
-
 
 					bool validResponse = false;
 					while (validResponse == false) {
@@ -386,8 +412,10 @@ void cashierMenu()
 
                     saveBook();
                     delete [] cart;
+                    delete [] bookQuantity;
                     cartSize = 0;
                     cart = new Book[cartSize];
+                    bookQuantity = new int[cartSize];
                     break;
 		}
 		case 3: { //Exit back to the main menu
@@ -461,15 +489,18 @@ void reportMenu()
 
 // This needs to be at the beginning of main. No exceptions. This loads the information from our database file into an array.
 
-void loadBook() {
+bool loadBook() {
 	std::ifstream bookDatabase;
-	bookDatabase.open("books.txt", std::ios::in);
-
-	if (!bookDatabase.is_open()) {
-		std::cout << "File could not be opened" << std::endl;
-	}
-	else {
-		std::cout << "File was successfully opened." << std::endl;
+	try {
+		bookDatabase.open("books.txt", std::ios::in);
+		if (!bookDatabase.is_open()) {
+			throw 1;
+		}
+	} catch (int x) {
+		cout << "Error: " << x << ". books.txt could not be located." << endl;
+		cout << "Program terminating..." << endl;
+		system("pause");
+		return 0;
 	}
 
 	std::string tempInput;
@@ -515,6 +546,7 @@ void loadBook() {
 	}
 
 	bookDatabase.close();
+	return 1;
 }
 
 // This function is what will determine the initial size of our array.
@@ -539,7 +571,15 @@ int sizeOfArray() {
 void saveBook()
 {
 	ofstream output;
-	output.open("books.txt");
+	try {
+		output.open("books.txt");
+		if (!output.is_open()) {
+			throw 1;
+		}
+	} catch (int x) {
+		cout << "Error: " << x << ". books.txt is missing." << endl;
+		cout << "Restart program and locate books.txt and replace." << endl;
+	}
 	for (int count = 0; count < arraySize; count++)
 	{
 		output << bookArray[count].getTitle() << endl;
