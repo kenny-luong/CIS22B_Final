@@ -29,6 +29,8 @@
 ** - Need to include default options for all switch statements.
 ** - Create method to sort by quantity, retail, etc... Will probably need to use templates for that. [done]
 ** - Create a method that actually stores purchase information. To be used with cashier module.
+** - Check inputs to make sure all inputs are valid or are caught
+** - Implement try-catch in all opening of files. 
 **********************
 **   Cosmetic To-Do List - gotta make dat shit pretty
 **  [x] main menu
