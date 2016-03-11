@@ -21,26 +21,16 @@
 **
 ** - Rename variables. Some of them are unclear. [Mostly done]
 ** - Fix cin.ignore()
-** - separate menus and clean up main() [done]
-** - fix loop not finishing in inventoryMenu() and reportMenu()----> get rid of system("pause")s under every function call in switch [done]
-** - fix inventoryMenu() exiting directly to main() after executing any function [done]
 ** - create interface and code cashier functionality
-** - DEFINE REPORT FUNCTIONS [AT VERY BOTTOM] [done]
 ** - Need to include default options for all switch statements.
-** - Create method to sort by quantity, retail, etc... Will probably need to use templates for that. [done]
-** - Create a method that actually stores purchase information. To be used with cashier module.
 ** - Check inputs to make sure all inputs are valid or are caught
 ** - Implement try-catch in all opening of files.
 **********************
 **   Cosmetic To-Do List - gotta make dat shit pretty
-**  [x] main menu
-**  [x] inventory menu
-**  [ ] cashier menu [DNE yet]
-**  [x] report menu
+**  [ ] cashier menu
 **  [ ] addBook() [not really necessary]
 **  [ ] editBook() [not really necessary]
 **  [ ] deleteBook() [not really necessary]
-**  [x] displayBook()
 ***********************/
 
 using namespace std;
