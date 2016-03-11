@@ -9,13 +9,13 @@
 *********************************/
 
 Book::Book(string theTitle,
-		   string theISBN,
-		   string theAuthor,
-		   string thePublisher,
-		   string theDateAdded,
-		   double theRetail,
-		   double theWholeSale,
-		   int theQuantity) {
+	string theISBN,
+	string theAuthor,
+	string thePublisher,
+	string theDateAdded,
+	double theRetail,
+	double theWholeSale,
+	int theQuantity) {
 	title = theTitle;
 	isbn = theISBN;
 	author = theAuthor;
@@ -23,7 +23,7 @@ Book::Book(string theTitle,
 	dateAdded = theDateAdded;
 	retail = theRetail;
 	wholesale = theWholeSale;
-	quantity = theQuantity;	
+	quantity = theQuantity;
 }
 
 void Book::setTitle(string theTitle) {
@@ -90,17 +90,17 @@ int Book::getQuantity() {
 	return quantity;
 }
 
-bool Book::isOlder(string b) {
-	if (stoi(dateAdded.substr(4, 4)) < stoi(b.substr(4, 4)))
+bool isOlder(const Book& b1, const Book& b2) {
+	if (stoi(b1.dateAdded.substr(4, 4)) < stoi(b2.dateAdded.substr(4, 4)))
 	{
 		return true;
 	}
-	else if (stoi(dateAdded.substr(4, 4)) == stoi(b.substr(4, 4))) {
-		if (stoi(dateAdded.substr(0, 2)) < stoi(b.substr(0, 2))) {
+	else if (stoi(b1.dateAdded.substr(4, 4)) == stoi(b2.dateAdded.substr(4, 4))) {
+		if (stoi(b1.dateAdded.substr(0, 2)) < stoi(b2.dateAdded.substr(0, 2))) {
 			return true;
 		}
-		else if (stoi(dateAdded.substr(0, 2)) == stoi(b.substr(0, 2))) {
-			if (stoi(dateAdded.substr(2, 2)) < stoi(b.substr(2, 2))) {
+		else if (stoi(b1.dateAdded.substr(0, 2)) == stoi(b2.dateAdded.substr(0, 2))) {
+			if (stoi(b1.dateAdded.substr(2, 2)) < stoi(b2.dateAdded.substr(2, 2))) {
 				return true;
 			}
 		}
