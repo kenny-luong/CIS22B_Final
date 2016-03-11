@@ -107,6 +107,42 @@ string currentDateTime() {
 //----------------------------------------
 int main() {
 	loadBook();
+	system("cls");
+	
+	string username;
+	string userpassword;
+	int loginattempt = 0;
+
+	while (loginattempt < 3)
+	{
+		cout << "Please enter your user name: ";
+		cin >> username;
+		cout << "Please enter your user password: ";
+		cin >> userpassword;
+
+		if (username == "admin" && userpassword == "password")
+		{
+			cout << "welcome " << username <<endl;
+			break;
+		}
+		else if (username == "employee" && userpassword == "password")
+		{
+			cout << "welcome "<< username <<endl;
+			break;
+		}
+		else
+		{
+			cout << "Invalid login attempt.\n" << '\n';
+			loginattempt++;
+		}
+	}
+	if (loginattempt == 3)
+	{
+		cout << "Error, you have made too many login attempts, program terminating.";
+		system("PAUSE");
+		return 0;
+	}
+	
 	int x = 1;
 	int mainChoice = 0;
 	do{
@@ -127,6 +163,12 @@ int main() {
 		switch (mainChoice)
 		{
 			case 1:
+				if (username == "employee")
+				{
+				cout << "Error inventory database requires admin access." << endl;
+				system("PAUSE");
+				break;
+				}
 				inventoryMenu();
 				break;
 			case 2:
