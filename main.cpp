@@ -237,7 +237,8 @@ void cashierMenu()
 	log.open("log.txt", ios::app);
 
 	int cashierExit = 0;
-	int bookQuantity[cartSize];
+	int *bookQuantity = new int[cartSize];
+	int quantity;
 	int counter = 0;
 
 	do {
@@ -269,16 +270,18 @@ void cashierMenu()
 				if (position != -1) {
 					cout << "Enter the quantity: ";
 
-					cin >> bookQuantity[counter];
+					cin >> quantity;
 					cin.ignore();
 
-					if (bookQuantity[counter] > bookArray[position].getQuantity()) {
+					if (quantity > bookArray[position].getQuantity()) {
 						cout << "We only currently have " << bookArray[position].getQuantity() << " in stock." << endl;
 						cout << "Book was not added to cart." << endl;
 					} else {
 						addToCart(position);
+						bookQuantity[counter] = quantity;
 						counter++;
 					}
+
 
 					bool validResponse = false;
 					while (validResponse == false) {
