@@ -30,7 +30,7 @@
 ** - Create method to sort by quantity, retail, etc... Will probably need to use templates for that. [done]
 ** - Create a method that actually stores purchase information. To be used with cashier module.
 ** - Check inputs to make sure all inputs are valid or are caught
-** - Implement try-catch in all opening of files. 
+** - Implement try-catch in all opening of files.
 **********************
 **   Cosmetic To-Do List - gotta make dat shit pretty
 **  [x] main menu
@@ -274,48 +274,55 @@ void cashierMenu()
 				string query;
 				cout << "Enter the title or ISBN: ";
 				getline(cin, query);
-				int position = searchBook(query);
-				addToCart(position);
-				cout << "Enter the quantity: ";
-				cin >> bookQuantity[counter];
-				if (bookQuantity[counter] > bookArray[position].getQuantity()) {
-					char reEnterQuant;
-					cout << "We only currently have " << bookArray[position].getQuantity() << " in stock." << endl;
-					cout << "Book was not added to cart." << endl;
-				}	
-				cin.ignore();
 
-				bool validResponse = false;
-				while (validResponse == false) {
-					cout << "Would you like to add another book? (Y/N): ";
-					cin >> repeat;
+				int position = searchBook(query);
+				if (position != -1) {
+					cout << "Enter the quantity: ";
+
+					cin >> bookQuantity[counter];
 					cin.ignore();
 
-					switch(repeat) {
-						case 'Y':
-						case 'y': 
-							validResponse = true;
-							counter++;
-							break;
-						case 'N':
-						case 'n': {
-							validResponse = true;
-							addAnother = false;
-							counter++;
-							break;
-						}
-						default: {
-							cout << "That was not a valid input." << endl;
-							break;
+					if (bookQuantity[counter] > bookArray[position].getQuantity()) {
+						cout << "We only currently have " << bookArray[position].getQuantity() << " in stock." << endl;
+						cout << "Book was not added to cart." << endl;
+					} else {
+						addToCart(position);
+						counter++;
+					}
+
+					bool validResponse = false;
+					while (validResponse == false) {
+						cout << "Would you like to add another book? (Y/N): ";
+						cin >> repeat;
+						cin.ignore();
+						switch(repeat) {
+							case 'Y':
+							case 'y':
+								validResponse = true;
+
+								break;
+							case 'N':
+							case 'n': {
+								validResponse = true;
+								addAnother = false;
+								counter++;
+								break;
+							}
+							default: {
+								cout << "That was not a valid input." << endl;
+									break;
+							}
 						}
 					}
+				} else {
+                    cout << "Sorry. We could not find that book in our inventory." << endl;
 				}
 			} while (addAnother == true);
 			break;
 		}
 		case 2: { // process transaction
 					double subtotal = 0, total, taxes, payment, change;
- 
+
                     cout << "Current Date: " << currentDateTime() << endl << endl;
                     cout << left << setw(8) << "Count: " << setw(15) << "ISBN: "
                         << setw(25) << "Title: " << setw(13) << right
@@ -324,53 +331,70 @@ void cashierMenu()
                     log << left << setw(8) << "Count: " << setw(15) << "ISBN: "
                         << setw(25) << "Title: " << setw(13) << right
                         << "Retail Price: " << setw(13) << "Total: " << endl;
-                   
- 
-                    for (int i = 0; i < counter; i++)
+
+
+                    for (int i = 0; i < cartSize; i++)
                     {
                         cout << right << setw(5) << bookQuantity[i] << "   " << setw(15) << left<< cart[i].getISBN()
                             << setw(25) << cart[i].getTitle() << setw(13) << right
                             << cart[i].getRetail() << setw(13) << bookQuantity[i] * cart[i].getRetail() << endl;
-                        
+
                         log << right << setw(5) << bookQuantity[i] << "   " << setw(15) << cart[i].getISBN()
                             << setw(25) << cart[i].getTitle() << setw(13) << right
                             << cart[i].getRetail() << setw(13) << bookQuantity[i] * cart[i].getRetail() << endl;
-                        
-                       	int position = searchBook(cart[i].getTitle());
-                       	int newQuantity = bookArray[position].getQuantity() - bookQuantity[i];
-                       	bookArray[position].setQuantity(newQuantity);
-                        
+
                         subtotal += (cart[i].getRetail() * bookQuantity[i]);
                     }
- 
+
                     taxes = 0.0875 * subtotal;
                     total = taxes + subtotal;
- 
+
                     cout << endl << setw(66) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
                     log << endl << setw(66) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
                     cout << setw(66) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
                     log << setw(66) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
                     cout << setw(66) << "Total: " << setw(8) << setprecision(2) << total << endl;
                     log << setw(66) << "Total: " << setw(8) << setprecision(2) << total << endl;
- 
-                    cout << endl << "Enter the amount of payment: ";
-                    cin >> payment;
-                    cin.ignore();
- 
+
+                    bool validPayment = false;
+
+                    do {
+                        cout << endl << "Enter the amount of payment: ";
+                        cin >> payment;
+                        cin.ignore();
+                        if (payment < total) {
+                            cout << "Payment is not enough." << endl;
+                        } else {
+                            validPayment = true;
+                            for (int i = 0; i < cartSize; i++) {
+                                int position = searchBook(cart[i].getTitle());
+                                int newQuantity = bookArray[position].getQuantity() - bookQuantity[i];
+                                bookArray[position].setQuantity(newQuantity);
+                                if (bookArray[position].getQuantity() < 0) {
+                                    bookArray[position].setQuantity(0);
+                                }
+                            }
+                        }
+                    } while (validPayment == false);
+
+
                     log << setw(30) << "Payment: " << setw(8) << setprecision(2) << payment << endl;
- 
+
                     change = payment - total;
- 
+
                     cout << setw(66) << "Change: " << setw(8) << change << endl;
                     log << setw(66) << "Change: " << setw(8) << change << endl << endl;
- 
+
                     counter = 0;
                     subtotal = 0;
- 
+
                     cout << endl << "Press enter to return to the Cashier menu";
                     getline(cin, emptyStr);
- 
+
                     saveBook();
+                    delete [] cart;
+                    cartSize = 0;
+                    cart = new Book[cartSize];
                     break;
 		}
 		case 3: { //Exit back to the main menu
@@ -389,6 +413,7 @@ void reportMenu()
 {
 	int reportExit = 0;
 	do {
+		system("CLS");
 		std::cout << endl << endl << endl << endl << endl;
 		std::cout << setw(50) << "Serendipity Booksellers" << endl;
 		std::cout << setw(47) << "Report Generator" << endl;
@@ -431,6 +456,12 @@ void reportMenu()
 			case 7:
 				reportExit = 1;
 				break;
+			default: {
+				system("CLS");
+				cout << "Not a valid option." << endl;
+				system("Pause");
+				break;
+			}
 		}
 	} while (reportExit == 0);
 }
@@ -822,6 +853,7 @@ void wholesaleReport()
 	for (int i = 0; i < arraySize; i++) {
 		std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
 		std::cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << std::endl;
+		std::cout << setw(25) << left << "Quantity: " << setw(20) << right << bookArray[i].getQuantity() << std::endl;
 		totalWholesale += bookArray[i].getWholeSale()*bookArray[i].getQuantity();
 		cout << "==================================================" << endl;
 	}
@@ -839,6 +871,7 @@ void retailReport()
 	for (int i = 0; i < arraySize; i++) {
 		std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
 		std::cout << setw(25) << left << "Retail Price:" << setw(20) << right << bookArray[i].getRetail() << std::endl;
+		std::cout << setw(25) << left << "Quantity: " << setw(20) << right << bookArray[i].getQuantity() << std::endl;
 		totalRetail += bookArray[i].getRetail()*bookArray[i].getQuantity();
 		cout << "==================================================" << endl;
 	}
