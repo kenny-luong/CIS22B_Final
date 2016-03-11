@@ -1,3 +1,4 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 //added iomanip for fancy shmancy output formatting in displayBook()
 #include <iomanip>
@@ -86,6 +87,16 @@ void addToArray (T &arrayName, int &arraySize) {
 
 		arraySize = newArraySize;
 		arrayName = tempArray;
+}
+
+string currentDateTime() {
+	time_t     now = time(0);
+	struct tm  tstruct;
+	char       buf[80];
+	tstruct = *localtime(&now);
+	strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+	return buf;
 }
 
 //----------------------------------------
@@ -229,7 +240,116 @@ void inventoryMenu()
 
 void cashierMenu()
 {
+	fstream log;
+	log.open("log.txt", ios::app);
 
+	int cashierExit = 0;
+	int bookLocation[25];
+	int bookQuantity[25];
+	int counter = 0;
+
+	do {
+		system("CLS");
+		cout << endl << endl << endl << endl << endl;
+		cout << setw(50) << "Serendipity Booksellers" << endl;
+		cout << setw(45) << "Cashier Module" << endl;
+		cout << endl;
+		cout << setw(46) << "1. Add to Purchase" << endl;
+		cout << setw(50) << "2. Process Transaction" << endl;
+		cout << setw(50) << "3. Return to main menu" << endl;
+		cout << endl << endl;
+		cout << setw(47) << "Enter your choice: ";
+		int cashierChoice;
+		cin >> cashierChoice;
+		cin.ignore();
+		system("CLS");
+
+		switch (cashierChoice) {
+		case 1:{   // add to purchase
+				   std::string query;
+				   std::cout << "Enter the title or ISBN of the book: ";
+				   std::getline(std::cin, query);
+				   bookLocation[counter] = searchBook(query);
+
+				   if (bookLocation[counter] == -1)
+				   {
+					   cout << "Book was not found." << endl;
+					   cout << endl << "Press enter to return to the Cashier menu";
+					   getline(cin, emptyStr);
+					   break;
+				   }
+
+				   cout << "Enter the number of copies that you wish to purchase: ";
+				   cin >> bookQuantity[counter];
+				   cin.ignore();
+
+				   if (bookQuantity[counter] > bookArray[bookLocation[counter]].getQuantity())
+				   {
+					   cout << "Number of copies are not available.";
+					   cout << endl << "Press enter to return to the Cashier menu";
+					   getline(cin, emptyStr);
+					   break;
+				   }
+				   counter++;
+				   break;
+		}
+		case 2: { // process transaction
+					double subtotal = 0, total, taxes, payment, change;
+
+					cout << setw(20) << left << "Item:" << setw(5) << "Count:" << setw(8) << right << "Price:" << endl;
+					log << "Current Date: " << currentDateTime() << endl;
+
+					for (int i = 0; i < counter; i++)
+					{
+						cout << setw(25) << left << bookArray[bookLocation[i]].getTitle() << setw(5) << bookQuantity[i] 
+							<< setw(8) << right << bookQuantity[i] * bookArray[bookLocation[i]].getRetail() << endl;
+						log << setw(25) << left << bookArray[bookLocation[i]].getTitle() << setw(5) << bookQuantity[i] 
+							<< setw(8) << right << bookQuantity[i] * bookArray[bookLocation[i]].getRetail() << endl;
+						bookArray[bookLocation[i]].setQuantity(bookArray[bookLocation[i]].getQuantity() - bookQuantity[i]);
+						subtotal += (bookArray[bookLocation[i]].getRetail() * bookQuantity[i]);
+					}
+
+					taxes = 0.085 * subtotal;
+					total = taxes + subtotal;
+
+					cout << endl << setw(30) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
+					log << endl << setw(30) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
+					cout << setw(30) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
+					log << setw(30) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
+					cout << setw(30) << "Total: " << setw(8) << setprecision(2) << total << endl;
+					log << setw(30) << "Total: " << setw(8) << setprecision(2) << total << endl;
+
+					cout << endl << "Enter the amount of payment: ";
+					cin >> payment;
+					cin.ignore();
+
+					log << setw(30) << "Payment: " << setw(8) << setprecision(2) << payment << endl;
+
+					change = payment - total;
+
+					cout << setw(30) << "Change: " << setw(8) << change << endl;
+					log << setw(30) << "Change: " << setw(8) << change << endl << endl;
+
+					counter = 0;
+					subtotal = 0;
+
+					cout << endl << "Press enter to return to the Cashier menu";
+					getline(cin, emptyStr);
+
+					saveBook();
+					break;
+		}
+		case 3: { //Exit back to the main menu
+					cashierExit = 1;
+					break;
+		}
+		default: {
+					break;
+		}
+		}
+	} while (cashierExit == 0);
+
+	log.close();
 }
 
 void reportMenu()
@@ -437,7 +557,6 @@ void deleteBook()
 		deleteLocation = searchBook(deleteQuery);
 		if (deleteLocation != -1)
 		{
-			int newQuant; //For case 2
 			cout << "Please select:" << endl;
 			cout << "1) Remove all copies of " << bookArray[deleteLocation].getTitle() << endl;
 			cout << "2) Return to previous screen" << endl; // change line
