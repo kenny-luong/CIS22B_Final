@@ -617,32 +617,80 @@ void addBook()
 	string temptitle, tempisbn, tempauthor, temppublisher, tempdate;
 	double tempretail, tempwholesale;
 	int tempquantity;
+	bool validISBN = false,  
+		 //validDate = false, 
+		 validQuantity = false, 
+		 validWholeSale = false, 
+		 validRetail = false;
 
 	std::cout << "Title: ";
 	std::getline(std::cin, temptitle);
 	bookArray[arraySize-1].setTitle(temptitle);
-	std::cout << endl << "ISBN: ";
-	std::getline(std::cin, tempisbn);
-	bookArray[arraySize-1].setISBN(tempisbn);
+
+	do {
+		std::cout << endl << "ISBN: ";
+		std::getline(std::cin, tempisbn);
+		if (tempisbn.length() == 11 || tempisbn.length() == 13) {
+			bookArray[arraySize-1].setISBN(tempisbn);
+			validISBN = true;
+		} else {
+			cout << "Invalid ISBN. ISBN must be 11 or 13 digits." << endl;
+		}
+	} while (validISBN == false);
+
 	std::cout << endl << "Author: ";
 	std::getline(std::cin, tempauthor);
 	bookArray[arraySize-1].setAuthor(tempauthor);
+
 	std::cout << endl << "Publisher: ";
 	std::getline(std::cin, temppublisher);
 	bookArray[arraySize-1].setPublisher(temppublisher);
+
 	std::cout << endl << "Date added: ";
 	std::getline(std::cin, tempdate);
 	bookArray[arraySize-1].setDateAdded(tempdate);
-	std::cout << endl << "Retail Price: ";
-	std::cin >> tempretail;
-	std::cin.ignore();
-	bookArray[arraySize-1].setRetail(tempretail);
-	std::cout << endl << "Wholesale Price: ";
-	std::cin >> tempwholesale;
-	bookArray[arraySize-1].setWholeSale(tempwholesale);
-	std::cout << endl << "Quantity: ";
-	std::cin >> tempquantity;
-	bookArray[arraySize-1].setQuantity(tempquantity);
+
+	do {	
+		std::cout << endl << "Retail Price: ";
+		if (std::cin >> tempretail) {
+			std::cin.ignore();
+			bookArray[arraySize-1].setRetail(tempretail);
+			validRetail = true;
+		} else {
+			cout << "Not a valid retail price." << endl;
+			cin.clear();
+			cin.ignore();
+		}
+	} while (validRetail == false);
+	
+
+	do {	
+		std::cout << endl << "Wholesale Price: ";
+		if (std::cin >> tempwholesale) {
+			std::cin.ignore();
+			bookArray[arraySize-1].setWholeSale(tempwholesale);
+			validWholeSale = true;
+		} else {
+			cout << "Not a valid wholesale price." << endl;
+			cin.clear();
+			cin.ignore();
+		}
+	} while (validWholeSale == false);
+
+	do {
+		std::cout << endl << "Quantity: ";
+		if (std::cin >> tempquantity) {
+			cin.ignore();
+			bookArray[arraySize-1].setQuantity(tempquantity);
+			validQuantity = true;
+		} else {
+			cout << "Not a valid quantity." << endl;
+			cin.clear();
+			cin.ignore();
+		}
+
+	} while (validQuantity == false);
+
 
 
 	saveBook();
@@ -760,11 +808,20 @@ void editBook()
                         getline(cin, newTitle);
                         bookArray[editLocation].setTitle(newTitle);
                         break;
-                    case 2:
-                        cout << "Please enter new ISBN: ";
-                        getline(cin, newISBN);
-                        bookArray[editLocation].setISBN(newISBN);
+                    case 2: {	
+                    	bool validISBN = false;
+                      	do {
+							std::cout << endl << "ISBN: ";
+							std::getline(std::cin, newISBN);
+							if (newISBN.length() == 11 || newISBN.length() == 13) {
+								validISBN = true;
+								bookArray[editLocation].setISBN(newISBN);
+							} else {
+								cout << "Invalid ISBN. ISBN must be 11 or 13 digits." << endl;
+							}
+						} while (validISBN == false);
                         break;
+                    }
                     case 3:
                         cout << "Please enter new author: ";
                         getline(cin, newAuthor);
@@ -780,42 +837,114 @@ void editBook()
                         getline(std::cin, newDateAdded);
                         bookArray[editLocation].setDateAdded(newDateAdded);
                         break;
-                    case 6:
-                        cout << "Please enter new retail price (in <dollars>.<cents> format): ";
-                        cin >> newRetail;
-                        bookArray[editLocation].setRetail(newRetail);
+                    case 6: {
+                    	bool validRetail = false;
+                    	do {	
+							std::cout << endl << "Retail Price: ";
+							if (std::cin >> newRetail) {
+								std::cin.ignore();
+								validRetail = true;
+								bookArray[editLocation].setRetail(newRetail);
+							} else {
+								cout << "Not a valid retail price." << endl;
+								cin.clear();
+								cin.ignore();
+							}
+						} while (validRetail == false);
                         break;
-                    case 7:
-                        cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
-                        cin >> newWholeSale;
-                        bookArray[editLocation].setWholeSale(newWholeSale);
+                    }
+						
+                    case 7: {
+                    	bool validWholeSale = false;
+                    	do {
+							cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
+                      	 	if (cin >> newWholeSale) {
+                      	 		cin.ignore();
+                      	 		validWholeSale = true;
+	                     	  	bookArray[editLocation].setWholeSale(newWholeSale);
+                      	 	} else {
+                      	 		cout << "Not a valid wholesale price." << endl;
+                      	 		cin.clear();
+                      	 		cin.ignore();
+                      	 	}
+                    	} while (validWholeSale == false);
                         break;
-                    case 8:
-                        cout << "Please enter updated amount in inventory: ";
-                        cin >> newQuantity;
-                        bookArray[editLocation].setQuantity(newQuantity);
+                    }
+
+                    case 8: {
+                    	bool validQuantity = false;
+                       do {
+                       	cout << "Please enter a new quantity: ";
+                       	if (cin >> newQuantity) {
+                       		cin.ignore();
+                       		validQuantity = true;
+                       		bookArray[editLocation].setQuantity(newQuantity);
+                       	} else {
+                       		cout << "Not a valid quantity." << endl;
+                       		cin.clear();
+                       		cin.ignore();
+                       	}
+
+                      } while (validQuantity == false);
+                   	}
                         break;
-                    case 9:
-                        //feedback to differentiate from case 1
-                        cout << "Now editing all attributes..." << endl;
+                    case 9: {
+ 						bool validISBN = false, validWholeSale = false, validQuantity = false, validRetail = false;
+ 						cout << "Now editing all attributes..." << endl;
 
                         cout << "Please enter new title: ";
                         getline(cin, newTitle);
-                        cout << "Please enter new ISBN: ";
-                        getline(cin, newISBN);
+                        do {
+                        	cout << "Please enter new ISBN: ";
+                        	getline(cin, newISBN);
+                        	if (newISBN.length() == 11 || newISBN.length() == 13) {
+                        		validISBN = true;
+                        	} else {
+                        		cout << "Not a valid ISBN. ISBN must be 11 or 13 digits." << endl;
+                        	}
+                        } while (validISBN == false);
                         cout << "Please enter new author: ";
                         getline(cin, newAuthor);
                         cout << "Please enter new publisher: ";
                         getline(cin, newPublisher);
                         cout << "Please enter new date added (mmddyyyy): ";
                         getline(cin, newDateAdded);
-                        cout << "Please enter new retail price (in <dollars>.<cents> format): ";
-                        cin >> newRetail;
-                        cin.ignore();
-                        cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
-                        cin >> newWholeSale;
-                        cout << "Please enter new quantity in inventory: ";
-                        cin >> newQuantity;
+                        do {
+	                        cout << "Please enter new retail price (in <dollars>.<cents> format): ";
+	                        if (cin >> newRetail) {
+	                        	cin.ignore();
+	                        	validRetail = true;
+	                        } else {
+	                        	cout << "Not a valid retail price." << endl;
+	                        	cin.clear();
+	                        	cin.ignore();
+	                        }
+                        } while (validRetail == false);
+                        
+                        do {
+                        	cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
+                        	if (cin >> newWholeSale) {
+                        		cin.ignore();
+                        		validWholeSale = true;
+                        	} else {
+                        		cout << "Not a vaid wholesale price." << endl;
+                        		cin.ignore();
+                        		cin.clear();
+                        	}
+                        } while (validWholeSale == false);
+
+                        do {
+                        	cout << "Please enter new quantity in inventory: ";
+                        	if (cin >> newQuantity) {
+                        		cin.ignore();
+                        		validQuantity = true;
+                        	} else {
+                        		cout << "Not a valid quantity." << endl;
+                        		cin.clear();
+                        		cin.ignore();
+                        	} 
+                        } while (validQuantity == false);
+
                         bookArray[editLocation].setTitle(newTitle);
                         bookArray[editLocation].setISBN(newISBN);
                         bookArray[editLocation].setAuthor(newAuthor);
@@ -824,6 +953,9 @@ void editBook()
                         bookArray[editLocation].setRetail(newRetail);
                         bookArray[editLocation].setWholeSale(newWholeSale);
                         bookArray[editLocation].setQuantity(newQuantity);
+                        break;
+                    }
+                       
                     case 0:
                         cout << "Cancelling..." << endl;
                         screenRepeat = false;
@@ -831,7 +963,7 @@ void editBook()
                     }
                     saveBook();
                     char editAgain;
-                    cout << "\n\tWould you like to edit another entry? (Y/N): ";
+                    cout << "\ncWould you like to edit another entry? (Y/N): ";
                     cin >> editAgain;
                     cin.ignore();
                     switch (editAgain) {
@@ -840,6 +972,7 @@ void editBook()
                         break;
                     case 'N':
                     case 'n':
+                        screenRepeat = false;
                         repeat = false;
                         break;
                     default:

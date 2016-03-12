@@ -1,11 +1,11 @@
 Harry Potter
-12321321
-JK Rowling
+0123456789123
+J.K. Rowling
 Publisher
 04021994
 24.99
-12.99
-5
+5.99
+30
 Book2
 ISBN2
 Author2
@@ -30,3 +30,11 @@ Publisher4
 29.99
 2.99
 0
+Book24
+1234567890123
+Author24
+Publisher24
+04021994
+24.99
+12.99
+5
