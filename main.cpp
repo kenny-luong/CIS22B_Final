@@ -9,12 +9,12 @@
 #include <ctime>
 
 /********************************************
-**					READ-ME
-**
-** Please try to write your code as clean as possible.
-** The code itself should describe its process and variable names should be descriptive enough to not need comments.
-** Of course there will be exceptions but just try to write your code such that it doesn't need comments.
-*********************************************/
+ **					READ-ME
+ **
+ ** Please try to write your code as clean as possible.
+ ** The code itself should describe its process and variable names should be descriptive enough to not need comments.
+ ** Of course there will be exceptions but just try to write your code such that it doesn't need comments.
+ *********************************************/
 
 /*********************
 **		Functional To-Do List
@@ -84,18 +84,18 @@ Book *cart = new Book[cartSize];
 
 template <class T>
 
-void addToArray(T &arrayName, int &arraySize) {
-	int newArraySize = arraySize + 1;
-	Book *tempArray = new Book[newArraySize];
+void addToArray (T &arrayName, int &arraySize) {
+		int newArraySize = arraySize + 1;
+		Book *tempArray = new Book[newArraySize];
 
-	for (int count = 0; count < arraySize; count++) {
-		tempArray[count] = arrayName[count];
-	}
+		for (int count = 0; count < arraySize; count++) {
+			tempArray[count] = arrayName[count];
+		}
 
-	delete[] arrayName;
+		delete [] arrayName;
 
-	arraySize = newArraySize;
-	arrayName = tempArray;
+		arraySize = newArraySize;
+		arrayName = tempArray;
 }
 
 string currentDateTime() {
@@ -130,22 +130,31 @@ int main() {
 		std::cout << setw(46) << "4. Exit program..." << endl;
 		std::cout << endl << endl;
 		std::cout << setw(47) << "Enter your choice: ";
-		cin >> mainChoice;
-		system("cls");
 
-		switch (mainChoice)
-		{
-		case 1:
-			inventoryMenu();
-			break;
-		case 2:
-			cashierMenu();
-			break;
-		case 3:
-			reportMenu();
-			break;
-		case 4:
-			return 0;
+		if (cin >> mainChoice) {
+			system("cls");
+			switch (mainChoice)
+			{
+				case 1:
+					inventoryMenu();
+					break;
+				case 2:
+					cashierMenu();
+					break;
+				case 3:
+					reportMenu();
+					break;
+				case 4:
+					return 0;
+				default: {
+					cout << "Invalid option." << endl;
+					break;
+				}
+			}
+		} else {
+			cin.clear();
+			cin.ignore();
+			cout << "Not a valid input." << endl;
 		}
 	} while (x == 1);
 }
@@ -184,9 +193,8 @@ int searchBook(std::string searchCriteria) {
 void addToCart(int position) {
 	if (position != -1) {
 		addToArray(cart, cartSize);
-		cart[cartSize - 1] = bookArray[position];
-	}
-	else {
+		cart[cartSize-1] = bookArray[position];
+	} else {
 		cout << "Unable to add to cart." << endl;
 	}
 }
@@ -209,44 +217,47 @@ void inventoryMenu()
 		std::cout << endl << endl;
 		std::cout << setw(47) << "Enter your choice: ";
 		int inventoryChoice;
-		cin >> inventoryChoice;
-		cin.ignore();
-		system("CLS");
+		if (cin >> inventoryChoice) {
+            cin.ignore();
+            system("CLS");
+            switch (inventoryChoice) {
+                case 1:{   // look up a book
+                    std::string query;
+                    std::cout << "Enter the title or ISBN of the book: ";
+                    std::getline(std::cin, query);
+                    displayBook(searchBook(query));
+                    cout << endl << "Press enter to return to the inventory menu";
+                    getline(cin, emptyStr);
+                    break;
+                }
+                case 2:{  // Add a book
+                    addBook();
+                    cout << endl << "Press enter to return to the inventory menu";
+                    getline(cin, emptyStr);
+                    break;
+                }
 
-		switch (inventoryChoice) {
-		case 1:{   // look up a book
-			std::string query;
-			std::cout << "Enter the title or ISBN of the book: ";
-			std::getline(std::cin, query);
-			displayBook(searchBook(query));
-			cout << endl << "Press enter to return to the inventory menu";
-			getline(cin, emptyStr);
-			break;
-		}
-		case 2:{  // Add a book
-			addBook();
-			cout << endl << "Press enter to return to the inventory menu";
-			getline(cin, emptyStr);
-			break;
-		}
-
-		case 3: { // Edit a book
-			editBook();
-			cout << endl << "Press enter to return to the inventory menu";
-			getline(cin, emptyStr);
-			break;
-		}
-		case 4: { //Delete a book
-			deleteBook();
-			break;
-		}
-		case 5: { //Exit back to the main menu
-			inventoryExit = 1;
-			break;
-		}
-		default: {
-			break;
-		}
+                case 3: { // Edit a book
+                    editBook();
+                    cout << endl << "Press enter to return to the inventory menu";
+                    getline(cin, emptyStr);
+                    break;
+                }
+                case 4: { //Delete a book
+                    deleteBook();
+                    break;
+                }
+                case 5: { //Exit back to the main menu
+                    inventoryExit = 1;
+                    break;
+                }
+                default: {
+                    break;
+                }
+            }
+		} else {
+            cin.clear();
+            cin.ignore();
 		}
 	} while (inventoryExit == 0);
 }
@@ -260,13 +271,12 @@ void cashierMenu()
 		if (!log.is_open()) {
 			throw 1;
 		}
-	}
-	catch (int x) {
+	} catch (int x) {
 		cout << "Error: " << x << ". File could not be opened." << endl;
 		cashierExit = 1;
 	}
 
-	int *bookQuantity = new int[cartSize];
+    int *bookQuantity = new int[cartSize];
 	int quantity;
 	int counter = 0;
 
@@ -282,153 +292,162 @@ void cashierMenu()
 		cout << endl << endl;
 		cout << setw(47) << "Enter your choice: ";
 		int cashierChoice;
-		cin >> cashierChoice;
-		cin.ignore();
-		system("CLS");
+		if (cin >> cashierChoice) {
+            system("CLS");
+            cin.ignore();
 
-		switch (cashierChoice) {
-		case 1:{   // add to purchase
-			bool addAnother = true;
-			do {
-				char repeat;
-				string query;
-				cout << "Enter the title or ISBN: ";
-				getline(cin, query);
+            switch (cashierChoice) {
+            case 1:{   // add to purchase
+                bool addAnother = true;
+                do {
+                    char repeat;
+                    string query;
+                    cout << "Enter the title or ISBN: ";
+                    getline(cin, query);
 
-				int position = searchBook(query);
-				if (position != -1) {
-					cout << "Enter the quantity: ";
+                    int position = searchBook(query);
+                    if (position != -1) {
+                        cout << "Enter the quantity: ";
 
-					cin >> quantity;
-					cin.ignore();
+                        cin >> quantity;
+                        cin.ignore();
 
-					if (quantity > bookArray[position].getQuantity()) {
-						cout << "We only currently have " << bookArray[position].getQuantity() << " in stock." << endl;
-						cout << "Book was not added to cart." << endl;
-					}
-					else {
-						addToCart(position);
-						bookQuantity[counter] = quantity;
-						counter++;
-					}
+                        if (quantity > bookArray[position].getQuantity()) {
+                            cout << "We only currently have " << bookArray[position].getQuantity() << " in stock." << endl;
+                            cout << "Book was not added to cart." << endl;
+                        }
+                        else {
+                            addToCart(position);
+                            bookQuantity[counter] = quantity;
+                            counter++;
+                        }
 
-					bool validResponse = false;
-					while (validResponse == false) {
-						cout << "Would you like to add another book? (Y/N): ";
-						cin >> repeat;
-						cin.ignore();
-						switch (repeat) {
-						case 'Y':
-						case 'y':
-							validResponse = true;
-							break;
-						case 'N':
-						case 'n': {
-							validResponse = true;
-							addAnother = false;
-							break;
-						}
-						default: {
-							cout << "That was not a valid input." << endl;
-							break;
-						}
-						}
-					}
-				}
-				else {
-					cout << "Sorry. We could not find that book in our inventory." << endl;
-				}
-			} while (addAnother == true);
-			break;
-		}
-		case 2: { // process transaction
-			double subtotal = 0, total, taxes, payment, change;
+                        bool validResponse = false;
+                        while (validResponse == false) {
+                            cout << "Would you like to add another book? (Y/N): ";
+                            cin >> repeat;
+                            cin.ignore();
+                            switch (repeat) {
+                            case 'Y':
+                            case 'y':
+                                validResponse = true;
 
-			cout << "Current Date: " << currentDateTime() << endl << endl;
-			cout << left << setw(8) << "Count: " << setw(15) << "ISBN: "
-				<< setw(25) << "Title: " << setw(13) << right
-				<< "Retail Price: " << setw(13) << "Total: " << endl;
-			log << "Current Date: " << currentDateTime() << endl << endl;
-			log << left << setw(8) << "Count: " << setw(15) << "ISBN: "
-				<< setw(25) << "Title: " << setw(13) << right
-				<< "Retail Price: " << setw(13) << "Total: " << endl;
-
-
-			for (int i = 0; i < cartSize; i++)
-			{
-				cout << right << setw(5) << bookQuantity[i] << "   " << setw(15) << left << cart[i].getISBN()
-					<< setw(25) << cart[i].getTitle() << setw(13) << right
-					<< cart[i].getRetail() << setw(13) << bookQuantity[i] * cart[i].getRetail() << endl;
-
-				log << right << setw(5) << bookQuantity[i] << "   " << setw(15) << cart[i].getISBN()
-					<< setw(25) << cart[i].getTitle() << setw(13) << right
-					<< cart[i].getRetail() << setw(13) << bookQuantity[i] * cart[i].getRetail() << endl;
-
-				subtotal += (cart[i].getRetail() * bookQuantity[i]);
-			}
-
-			taxes = 0.0875 * subtotal;
-			total = taxes + subtotal;
-
-			cout << endl << setw(66) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
-			log << endl << setw(66) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
-			cout << setw(66) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
-			log << setw(66) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
-			cout << setw(66) << "Total: " << setw(8) << setprecision(2) << total << endl;
-			log << setw(66) << "Total: " << setw(8) << setprecision(2) << total << endl;
-
-			bool validPayment = false;
-
-			do {
-				cout << endl << "Enter the amount of payment: ";
-				cin >> payment;
-				cin.ignore();
-				if (payment < total) {
-					cout << "Payment is not enough." << endl;
-				}
-				else {
-					validPayment = true;
-					for (int i = 0; i < cartSize; i++) {
-						int position = searchBook(cart[i].getTitle());
-						int newQuantity = bookArray[position].getQuantity() - bookQuantity[i];
-						bookArray[position].setQuantity(newQuantity);
-						if (bookArray[position].getQuantity() < 0) {
-							bookArray[position].setQuantity(0);
-						}
-					}
-				}
-			} while (validPayment == false);
+                                break;
+                            case 'N':
+                            case 'n': {
+                                validResponse = true;
+                                addAnother = false;
+                                break;
+                            }
+                            default: {
+                                cout << "That was not a valid input." << endl;
+                                break;
+                            }
+                            }
+                        }
+                    }
+                    else {
+                        cout << "Sorry. We could not find that book in our inventory." << endl;
+                    }
+                } while (addAnother == true);
+                break;
+            }
+            case 2: { // process transaction
+                bool validPayment = false;
+                double subtotal = 0, total, taxes, payment, change;
+                do {
+                    system("CLS");
+                    total = 0;
+                    subtotal = 0;
+                    cout << "Current Date: " << currentDateTime() << endl << endl;
+                    cout << left << setw(8) << "Count: " << setw(15) << "ISBN: "
+                        << setw(25) << "Title: " << setw(13) << right
+                        << "Retail Price: " << setw(13) << "Total: " << endl;
+                    log << "Current Date: " << currentDateTime() << endl << endl;
+                    log << left << setw(8) << "Count: " << setw(15) << "ISBN: "
+                        << setw(25) << "Title: " << setw(13) << right
+                        << "Retail Price: " << setw(13) << "Total: " << endl;
 
 
-			log << setw(30) << "Payment: " << setw(8) << setprecision(2) << payment << endl;
+                    for (int i = 0; i < cartSize; i++)
+                    {
+                        cout << right << setw(5) << bookQuantity[i] << "   " << setw(15) << left << cart[i].getISBN()
+                            << setw(25) << cart[i].getTitle() << setw(13) << right
+                            << cart[i].getRetail() << setw(13) << bookQuantity[i] * cart[i].getRetail() << endl;
 
-			change = payment - total;
+                        log << right << setw(5) << bookQuantity[i] << "   " << setw(15) << cart[i].getISBN()
+                            << setw(25) << cart[i].getTitle() << setw(13) << right
+                            << cart[i].getRetail() << setw(13) << bookQuantity[i] * cart[i].getRetail() << endl;
 
-			cout << setw(66) << "Change: " << setw(8) << change << endl;
-			log << setw(66) << "Change: " << setw(8) << change << endl << endl;
+                        subtotal += (cart[i].getRetail() * bookQuantity[i]);
+                    }
 
-			counter = 0;
-			subtotal = 0;
-			saveBook();
-			delete[] cart;
-//			delete[] bookQuantity;
-			cartSize = 0;
-			cart = new Book[cartSize];
-//			bookQuantity = new int[cartSize];
-			cout << endl << "Press enter to return to the Cashier menu";
-			getline(cin, emptyStr);
+                    taxes = 0.0875 * subtotal;
+                    total = taxes + subtotal;
+
+                    cout << endl << setw(66) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
+                    log << endl << setw(66) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
+                    cout << setw(66) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
+                    log << setw(66) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
+                    cout << setw(66) << "Total: " << setw(8) << setprecision(2) << total << endl;
+                    log << setw(66) << "Total: " << setw(8) << setprecision(2) << total << endl;
 
 
-			break;
-		}
-		case 3: { //Exit back to the main menu
-			cashierExit = 1;
-			break;
-		}
-		default: {
-			break;
-		}
-		}
+
+
+                    cout << endl << "Enter the amount of payment: ";
+                    if (cin >> payment) {
+                        cin.ignore();
+                        if (payment < total) {
+                            cout << "Payment is not enough." << endl;
+                        }
+                        else {
+                            validPayment = true;
+                            for (int i = 0; i < cartSize; i++) {
+                                int position = searchBook(cart[i].getTitle());
+                                int newQuantity = bookArray[position].getQuantity() - bookQuantity[i];
+                                bookArray[position].setQuantity(newQuantity);
+                                if (bookArray[position].getQuantity() < 0) {
+                                    bookArray[position].setQuantity(0);
+                                }
+                            }
+                        }
+                    } else {
+                        cin.clear();
+                        cin.ignore();
+                    }
+                    log << setw(30) << "Payment: " << setw(8) << setprecision(2) << payment << endl;
+
+                    change = payment - total;
+
+                    cout << setw(66) << "Change: " << setw(8) << change << endl;
+                    log << setw(66) << "Change: " << setw(8) << change << endl << endl;
+                } while (validPayment == false);
+
+                counter = 0;
+                subtotal = 0;
+                saveBook();
+                delete[] cart;
+
+                cartSize = 0;
+                cart = new Book[cartSize];
+
+                cout << endl << "Press enter to return to the Cashier menu";
+                getline(cin, emptyStr);
+                break;
+            }
+            case 3: { //Exit back to the main menu
+                        cashierExit = 1;
+                        break;
+            }
+            default: {
+                        break;
+            }
+            }
+        } else {
+            cin.clear();
+            cin.ignore();
+        }
 	} while (cashierExit == 0);
 
 	log.close();
@@ -455,38 +474,41 @@ void reportMenu()
 		std::cout << endl << endl;
 		std::cout << setw(47) << "Enter your choice: ";
 		int reportChoice = 0;
-		cin >> reportChoice;
-		cin.ignore();
-		switch (reportChoice)
-		{
-		case 1:
-			inventoryReport();
-			break;
-		case 2:
-			wholesaleReport();
-			break;
-		case 3:
-			retailReport();
-			break;
-		case 4:
-			quantityReport();
-			break;
-		case 5:
-			costReport();
-			break;
-		case 6:
-			ageReport();
-			break;
-		case 7:
-			reportExit = 1;
-			break;
-		default: {
-			system("CLS");
-			cout << "Not a valid option." << endl;
-			system("Pause");
-			break;
+		if (cin >> reportChoice) {
+            cin.ignore();
+            switch (reportChoice)
+            {
+                case 1:
+                    inventoryReport();
+                    break;
+                case 2:
+                    wholesaleReport();
+                    break;
+                case 3:
+                    retailReport();
+                    break;
+                case 4:
+                    quantityReport();
+                    break;
+                case 5:
+                    costReport();
+                    break;
+                case 6:
+                    ageReport();
+                    break;
+                case 7:
+                    reportExit = 1;
+                    break;
+                default: {
+                    cout << "Not a valid option." << endl;
+                    break;
+                }
+            }
+		} else {
+            cin.clear();
+            cin.ignore();
 		}
-		}
+
 	} while (reportExit == 0);
 }
 
@@ -499,8 +521,7 @@ bool loadBook() {
 		if (!bookDatabase.is_open()) {
 			throw 1;
 		}
-	}
-	catch (int x) {
+	} catch (int x) {
 		cout << "Error: " << x << ". books.txt could not be located." << endl;
 		cout << "Program terminating..." << endl;
 		system("pause");
@@ -580,8 +601,7 @@ void saveBook()
 		if (!output.is_open()) {
 			throw 1;
 		}
-	}
-	catch (int x) {
+	} catch (int x) {
 		cout << "Error: " << x << ". books.txt is missing." << endl;
 		cout << "Restart program and locate books.txt and replace." << endl;
 	}
@@ -611,29 +631,29 @@ void addBook()
 
 	std::cout << "Title: ";
 	std::getline(std::cin, temptitle);
-	bookArray[arraySize - 1].setTitle(temptitle);
+	bookArray[arraySize-1].setTitle(temptitle);
 	std::cout << endl << "ISBN: ";
 	std::getline(std::cin, tempisbn);
-	bookArray[arraySize - 1].setISBN(tempisbn);
+	bookArray[arraySize-1].setISBN(tempisbn);
 	std::cout << endl << "Author: ";
 	std::getline(std::cin, tempauthor);
-	bookArray[arraySize - 1].setAuthor(tempauthor);
+	bookArray[arraySize-1].setAuthor(tempauthor);
 	std::cout << endl << "Publisher: ";
 	std::getline(std::cin, temppublisher);
-	bookArray[arraySize - 1].setPublisher(temppublisher);
+	bookArray[arraySize-1].setPublisher(temppublisher);
 	std::cout << endl << "Date added: ";
 	std::getline(std::cin, tempdate);
-	bookArray[arraySize - 1].setDateAdded(tempdate);
+	bookArray[arraySize-1].setDateAdded(tempdate);
 	std::cout << endl << "Retail Price: ";
 	std::cin >> tempretail;
 	std::cin.ignore();
-	bookArray[arraySize - 1].setRetail(tempretail);
+	bookArray[arraySize-1].setRetail(tempretail);
 	std::cout << endl << "Wholesale Price: ";
 	std::cin >> tempwholesale;
-	bookArray[arraySize - 1].setWholeSale(tempwholesale);
+	bookArray[arraySize-1].setWholeSale(tempwholesale);
 	std::cout << endl << "Quantity: ";
 	std::cin >> tempquantity;
-	bookArray[arraySize - 1].setQuantity(tempquantity);
+	bookArray[arraySize-1].setQuantity(tempquantity);
 
 
 	saveBook();
@@ -644,47 +664,63 @@ void addBook()
 
 void deleteBook()
 {
-	int deleteRepeat = 0;
+    char repeat;
+	bool deleteRepeat = true;
 	int deleteSelect = 0;
 	do {
-		//grabbed prompt for search from main()
+        system("CLS");
 		string deleteQuery;
 		std::cout << "Please enter title or ISBN to delete: " << std::endl;
-		//		cin.ignore();
 		std::getline(cin, deleteQuery);
-		//function calls
+
 		int deleteLocation;
-		//should display all info of match, better for user interactivity, I guess
-		//DEBUG std::cout << "this is a debug statement" << std::endl;
+
 		deleteLocation = searchBook(deleteQuery);
 		if (deleteLocation != -1)
 		{
 			cout << "Please select:" << endl;
 			cout << "1) Remove all copies of " << bookArray[deleteLocation].getTitle() << endl;
-			cout << "2) Return to previous screen" << endl; // change line
-			cin >> deleteSelect;
-			cin.ignore();
-			switch (deleteSelect)
-			{
-			case 1:
-				cout << "Removing all copies..." << endl;
-				bookArray[deleteLocation].setQuantity(0);
-				cout << "All copies removed." << endl;
-				break;
-			case 2:
-				cout << "Cancelling..." << endl;
-				break;
-			}
-			cout << "Would you like to delete another entry? 1 = Y, 0 = N" << endl;
-			cin >> deleteRepeat;
-			cin.ignore();
-			saveBook();
+			cout << "2) Return to previous screen" << endl;
+			if (cin >> deleteSelect) {
+                cin.ignore();
+                switch (deleteSelect)
+                {
+                case 1:
+                    cout << "Removing all copies..." << endl;
+                    bookArray[deleteLocation].setQuantity(0);
+                    cout << "All copies removed." << endl;
+                    break;
+                case 2:
+                    cout << "Cancelling..." << endl;
+                    break;
+                }
+                cout << "Would you like to delete another entry? (Y/N): " << endl;
+                if (cin >> repeat) {
+                    cin.ignore();
+                    switch (repeat) {
+                    case 'Y':
+                    case 'y':
+                        saveBook();
+                        break;
+                    case 'N':
+                    case 'n':
+                        saveBook();
+                        deleteRepeat = false;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+            } else {
+                cin.clear();
+                cin.ignore();
+            }
 		}
 		else {
-			cout << "This is not working" << endl; //debug
+			cout << "Book could not be found." << endl;
+			system("pause");
 		}
-
-	} while (deleteRepeat != 0);
+	} while (deleteRepeat == true);
 }
 
 /**********
@@ -693,124 +729,144 @@ void deleteBook()
 
 void editBook()
 {
-	int repeat = 0;
+	bool repeat = true;
 	do {
-		//grabbed prompt for search from main()
+        system("CLS");
 		string editQuery;
 		std::cout << "Please enter title or ISBN to edit: " << std::endl;
-		//		cin.ignore();
+
 		std::getline(cin, editQuery);
-		//function calls
+
 		int editLocation;
-		//should display all info of match, better for user interactivity, I guess
-		//DEBUG std::cout << "this is a debug statement" << std::endl;
+
 		editLocation = searchBook(editQuery);
 
 		if (editLocation != -1)
 		{
+		    bool screenRepeat = true;
 			int editSelect;
-			std::cout << "Please select attribute to edit: " << endl;
-			cout << "1) Title" << endl;
-			cout << "2) ISBN" << endl;
-			cout << "3) Author" << endl;
-			cout << "4) Publisher" << endl;
-			cout << "5) Date added" << endl;
-			cout << "6) Retail Price" << endl;
-			cout << "7) Wholesale price" << endl;
-			cout << "8) Quantity in inventory" << endl;
-			cout << "9) Multiple or all attributes" << endl;
-			cout << "0) Cancel..." << endl;
-			cin >> editSelect;
-			cin.ignore();
-			//declaring temp vars for editing input
-			string newTitle, newISBN, newAuthor, newPublisher, newDateAdded;
-			double newRetail, newWholeSale;
-			int newQuantity;
-			switch (editSelect)
-			{
-			case 1:
-				cout << "Please enter new title: ";
-				getline(cin, newTitle);
-				bookArray[editLocation].setTitle(newTitle);
-				break;
-			case 2:
-				cout << "Please enter new ISBN: ";
-				getline(cin, newISBN);
-				bookArray[editLocation].setISBN(newISBN);
-				break;
-			case 3:
-				cout << "Please enter new author: ";
-				getline(cin, newAuthor);
-				bookArray[editLocation].setAuthor(newAuthor);
-				break;
-			case 4:
-				cout << "Please enter new publisher: ";
-				getline(cin, newPublisher);
-				bookArray[editLocation].setPublisher(newPublisher);
-				break;
-			case 5:
-				cout << "Please enter new date added (mmddyyyy): ";
-				getline(std::cin, newDateAdded);
-				bookArray[editLocation].setDateAdded(newDateAdded);
-				break;
-			case 6:
-				cout << "Please enter new retail price (in <dollars>.<cents> format): ";
-				cin >> newRetail;
-				bookArray[editLocation].setRetail(newRetail);
-				break;
-			case 7:
-				cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
-				cin >> newWholeSale;
-				bookArray[editLocation].setWholeSale(newWholeSale);
-				break;
-			case 8:
-				cout << "Please enter updated amount in inventory: ";
-				cin >> newQuantity;
-				bookArray[editLocation].setQuantity(newQuantity);
-				break;
-			case 9:
-				//feedback to differentiate from case 1
-				cout << "Now editing all attributes..." << endl;
+			do {
+                system("CLS");
+                std::cout << "Please select attribute to edit: " << endl;
+                cout << "1) Title" << endl;
+                cout << "2) ISBN" << endl;
+                cout << "3) Author" << endl;
+                cout << "4) Publisher" << endl;
+                cout << "5) Date added" << endl;
+                cout << "6) Retail Price" << endl;
+                cout << "7) Wholesale price" << endl;
+                cout << "8) Quantity in inventory" << endl;
+                cout << "9) Multiple or all attributes" << endl;
+                cout << "0) Cancel..." << endl << endl;
+                cout << "Enter your choice: ";
+                if (cin >> editSelect) {
+                    cin.ignore();
+                    string newTitle, newISBN, newAuthor, newPublisher, newDateAdded;
+                    double newRetail, newWholeSale;
+                    int newQuantity;
+                    switch (editSelect)
+                    {
+                    case 1:
+                        cout << "Please enter new title: ";
+                        getline(cin, newTitle);
+                        bookArray[editLocation].setTitle(newTitle);
+                        break;
+                    case 2:
+                        cout << "Please enter new ISBN: ";
+                        getline(cin, newISBN);
+                        bookArray[editLocation].setISBN(newISBN);
+                        break;
+                    case 3:
+                        cout << "Please enter new author: ";
+                        getline(cin, newAuthor);
+                        bookArray[editLocation].setAuthor(newAuthor);
+                        break;
+                    case 4:
+                        cout << "Please enter new publisher: ";
+                        getline(cin, newPublisher);
+                        bookArray[editLocation].setPublisher(newPublisher);
+                        break;
+                    case 5:
+                        cout << "Please enter new date added (mmddyyyy): ";
+                        getline(std::cin, newDateAdded);
+                        bookArray[editLocation].setDateAdded(newDateAdded);
+                        break;
+                    case 6:
+                        cout << "Please enter new retail price (in <dollars>.<cents> format): ";
+                        cin >> newRetail;
+                        bookArray[editLocation].setRetail(newRetail);
+                        break;
+                    case 7:
+                        cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
+                        cin >> newWholeSale;
+                        bookArray[editLocation].setWholeSale(newWholeSale);
+                        break;
+                    case 8:
+                        cout << "Please enter updated amount in inventory: ";
+                        cin >> newQuantity;
+                        bookArray[editLocation].setQuantity(newQuantity);
+                        break;
+                    case 9:
+                        //feedback to differentiate from case 1
+                        cout << "Now editing all attributes..." << endl;
 
-				cout << "Please enter new title: ";
-				getline(cin, newTitle);
-				cout << "Please enter new ISBN: ";
-				getline(cin, newISBN);
-				cout << "Please enter new author: ";
-				getline(cin, newAuthor);
-				cout << "Please enter new publisher: ";
-				getline(cin, newPublisher);
-				cout << "Please enter new date added (mmddyyyy): ";
-				getline(cin, newDateAdded);
-				cout << "Please enter new retail price (in <dollars>.<cents> format): ";
-				cin >> newRetail;
-				cin.ignore();
-				cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
-				cin >> newWholeSale;
-				cout << "Please enter new quantity in inventory: ";
-				cin >> newQuantity;
-				bookArray[editLocation].setTitle(newTitle);
-				bookArray[editLocation].setISBN(newISBN);
-				bookArray[editLocation].setAuthor(newAuthor);
-				bookArray[editLocation].setPublisher(newPublisher);
-				bookArray[editLocation].setDateAdded(newDateAdded);
-				bookArray[editLocation].setRetail(newRetail);
-				bookArray[editLocation].setWholeSale(newWholeSale);
-				bookArray[editLocation].setQuantity(newQuantity);
-			case 0:
-				cout << "Cancelling..." << endl;
-				break;
-			}
-			//calls output info to update books.txt
-			saveBook();
-			//prompts for value to decide whether to exit do-while loop
-			cout << "Enter 1 to edit another entry, or enter 0 to exit editing module." << endl;
-			cin >> repeat;
+                        cout << "Please enter new title: ";
+                        getline(cin, newTitle);
+                        cout << "Please enter new ISBN: ";
+                        getline(cin, newISBN);
+                        cout << "Please enter new author: ";
+                        getline(cin, newAuthor);
+                        cout << "Please enter new publisher: ";
+                        getline(cin, newPublisher);
+                        cout << "Please enter new date added (mmddyyyy): ";
+                        getline(cin, newDateAdded);
+                        cout << "Please enter new retail price (in <dollars>.<cents> format): ";
+                        cin >> newRetail;
+                        cin.ignore();
+                        cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
+                        cin >> newWholeSale;
+                        cout << "Please enter new quantity in inventory: ";
+                        cin >> newQuantity;
+                        bookArray[editLocation].setTitle(newTitle);
+                        bookArray[editLocation].setISBN(newISBN);
+                        bookArray[editLocation].setAuthor(newAuthor);
+                        bookArray[editLocation].setPublisher(newPublisher);
+                        bookArray[editLocation].setDateAdded(newDateAdded);
+                        bookArray[editLocation].setRetail(newRetail);
+                        bookArray[editLocation].setWholeSale(newWholeSale);
+                        bookArray[editLocation].setQuantity(newQuantity);
+                    case 0:
+                        cout << "Cancelling..." << endl;
+                        screenRepeat = false;
+                        break;
+                    }
+                    saveBook();
+                    char editAgain;
+                    cout << "\n\tWould you like to edit another entry? (Y/N): ";
+                    cin >> editAgain;
+                    cin.ignore();
+                    switch (editAgain) {
+                    case 'Y':
+                    case 'y':
+                        break;
+                    case 'N':
+                    case 'n':
+                        repeat = false;
+                        break;
+                    default:
+                        break;
+                    }
+                } else {
+                    cin.clear();
+                    cin.ignore();
+                    system("CLS");
+                }
+			} while (screenRepeat == true);
+		} else {
+            cout << "Book was not found." << endl;
+            system("pause");
 		}
-		else {
-			std::cout << "I didn't even try." << std::endl; //debug
-		}
-	} while (repeat != 0);
+	} while (repeat == true);
 }
 
 
