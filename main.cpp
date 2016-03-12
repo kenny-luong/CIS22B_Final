@@ -321,13 +321,11 @@ void cashierMenu()
 						case 'Y':
 						case 'y':
 							validResponse = true;
-
 							break;
 						case 'N':
 						case 'n': {
 							validResponse = true;
 							addAnother = false;
-							counter++;
 							break;
 						}
 						default: {
