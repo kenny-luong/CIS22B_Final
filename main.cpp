@@ -1,6 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
-//added iomanip for fancy shmancy output formatting in displayBook()
 #include <iomanip>
 #include <string>
 #include <fstream>
@@ -12,30 +11,10 @@
 #include <conio.h>
 #include <stdio.h>
 
-/********************************************
- **                 READ-ME
- **
- ** Please try to write your code as clean as possible.
- ** The code itself should describe its process and variable names should be descriptive enough to not need comments.
- ** Of course there will be exceptions but just try to write your code such that it doesn't need comments.
- *********************************************/
-
 /*********************
 **      Functional To-Do List
 **
 ** - Polymorphism
-** - Check wholesale and retail prices. Make sure they're not negative.
-** - Display error message if wrong login details.
-**********************
-**   Cosmetic To-Do List - gotta make dat shit pretty
-**  [x] main menu
-**  [x] inventory menu
-**  [ ] cashier menu [DNE yet]
-**  [x] report menu
-**  [ ] addBook() [not really necessary]
-**  [ ] editBook() [not really necessary]
-**  [ ] deleteBook() [not really necessary]
-**  [x] displayBook()
 ***********************/
 
 /**********************
@@ -141,8 +120,11 @@ int main() {
             case 2:
                 isValid = true;
                 break;
-            case 3:
+            case 3: {
+                cout << endl << endl << setw(50) << "Invalid login details." << endl;
+                system("PAUSE");
                 break;
+            }
             }
         } while (isValid == false);
 
@@ -600,10 +582,16 @@ void addBook()
 
     do {
         cout << endl << "Retail Price: ";
-        if (cin >> tempretail) {
-            cin.ignore();
-
-            validRetail = true;
+        cin >> tempretail;
+        if (cin.good()) {
+            if (tempretail > 0) {
+                cin.ignore();
+                validRetail = true;
+            } else if (tempretail < 0) {
+                cout << "Minimum value of 0.00." << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+            }
         } else {
             cout << "Not a valid retail price." << endl;
             cin.clear();
@@ -614,10 +602,16 @@ void addBook()
 
     do {
         cout << endl << "Wholesale Price: ";
-        if (cin >> tempwholesale) {
-            cin.ignore();
-
-            validWholeSale = true;
+        cin >> tempwholesale;
+        if (cin.good()) {
+            if (tempwholesale > 0) {
+                cin.ignore();
+                validWholeSale = true;
+            } else if (tempquantity < 0) {
+                cout << "Minimum value of 0.00." << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+            }
         } else {
             cout << "Not a valid wholesale price." << endl;
             cin.clear();
@@ -627,14 +621,17 @@ void addBook()
 
     do {
         cout << endl << "Quantity: ";
-        if (cin >> tempquantity) {
-            cin.ignore();
-            validQuantity = true;
-        } else if (tempquantity < 0){
-            cout << "Minimum value of 0." << endl;
-            cin.clear();
-            cin.ignore(1000, '\n');
-        } else{
+        cin >> tempquantity;
+        if (cin.good()) {
+            if (tempquantity > 0) {
+                cin.ignore();
+                validQuantity = true;
+            }  else if (tempquantity < 0){
+                cout << "Minimum value of 0." << endl;
+                cin.clear();
+                cin.ignore(1000, '\n');
+            }
+        } else {
             cout << "Not a valid quantity." << endl;
             cin.clear();
             cin.ignore(1000, '\n');
@@ -813,22 +810,29 @@ void editBook()
                         bool validRetail = false;
                         do {
                             cout << endl << "Please enter a retail price: ";
-                            if (cin >> newRetail) {
-                                cin.ignore();
-                                validRetail = true;
-                                string adminCode;
-                                bool isValid = false;
-                                do {
-                                    cout << "Enter Admin Code to verify (enter 'x' to exit): ";
-                                    cin >> adminCode;
-                                    if (adminCode == admin[currentEmployee].getAdminCode()) {
-                                        isValid = true;
-                                        bookArray[editLocation].setRetail(newRetail);
-                                        saveBook();
-                                    } else if (adminCode == "x" || adminCode == "X") {
-                                        isValid = true;
-                                    }
-                                } while (isValid == false);
+                            cin >> newRetail;
+                            if (cin.good()) {
+                                if (newRetail > 0) {
+                                    cin.ignore();
+                                    validRetail = true;
+                                    string adminCode;
+                                    bool isValid = false;
+                                    do {
+                                        cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                                        cin >> adminCode;
+                                        if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                            isValid = true;
+                                            bookArray[editLocation].setRetail(newRetail);
+                                            saveBook();
+                                        } else if (adminCode == "x" || adminCode == "X") {
+                                            isValid = true;
+                                        }
+                                    } while (isValid == false);
+                                } else if (newRetail < 0) {
+                                    cout << "Minimum value of 0.00." << endl;
+                                    cin.clear();
+                                    cin.ignore(1000, '\n');
+                                }
                             } else {
                                 cin.clear();
                                 cin.ignore(1000, '\n');
@@ -843,22 +847,29 @@ void editBook()
                         bool validWholeSale = false;
                         do {
                             cout << "Please enter new wholesale price: ";
-                            if (cin >> newWholeSale) {
-                                cin.ignore();
-                                validWholeSale = true;
-                                string adminCode;
-                                bool isValid = false;
-                                do {
-                                    cout << "Enter Admin Code to verify (enter 'x' to exit): ";
-                                    cin >> adminCode;
-                                    if (adminCode == admin[currentEmployee].getAdminCode()) {
-                                        isValid = true;
-                                        bookArray[editLocation].setWholeSale(newWholeSale);
-                                        saveBook();
-                                    } else if (adminCode == "x" || adminCode == "X") {
-                                        isValid = true;
-                                    }
-                                } while (isValid == false);
+                            cin >> newWholeSale;
+                            if (cin.good()) {
+                                if (newWholeSale > 0) {
+                                    cin.ignore();
+                                    validWholeSale = true;
+                                    string adminCode;
+                                    bool isValid = false;
+                                    do {
+                                        cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                                        cin >> adminCode;
+                                        if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                            isValid = true;
+                                            bookArray[editLocation].setWholeSale(newWholeSale);
+                                            saveBook();
+                                        } else if (adminCode == "x" || adminCode == "X") {
+                                            isValid = true;
+                                        }
+                                    } while (isValid == false);
+                                } else if (newWholeSale < 0) {
+                                    cout << "Minimum value of 0.00." << endl;
+                                    cin.clear();
+                                    cin.ignore(1000, '\n');
+                                }
                             } else {
                                 cout << "Not a valid wholesale price." << endl;
                                 cin.clear();
@@ -923,9 +934,16 @@ void editBook()
                         getline(cin, newDateAdded);
                         do {
                             cout << "Please enter new retail price: ";
-                            if (cin >> newRetail) {
-                                cin.ignore();
-                                validRetail = true;
+                            cin >> newRetail;
+                            if (cin.good()) {
+                                if (newRetail > 0) {
+                                    cin.ignore();
+                                    validRetail = true;
+                                } else if (newRetail < 0) {
+                                    cout << "Minimum value of 0.00." << endl;
+                                    cin.clear();
+                                    cin.ignore();
+                                }
                             } else {
                                 cin.clear();
                                 cin.ignore(1000, '\n');
@@ -937,9 +955,16 @@ void editBook()
 
                         do {
                             cout << "Please enter new wholesale price: ";
-                            if (cin >> newWholeSale) {
-                                cin.ignore();
-                                validWholeSale = true;
+                            cin >> newWholeSale;
+                            if (cin.good()) {
+                                if (newWholeSale > 0) {
+                                    cin.ignore();
+                                    validWholeSale = true;
+                                } else if (newWholeSale < 0) {
+                                    cout << "Minimum value of 0.00." << endl;
+                                    cin.clear();
+                                    cin.ignore();
+                                }
                             } else {
                                 cout << "Not a vaid wholesale price." << endl;
                                 cin.clear();
@@ -949,9 +974,16 @@ void editBook()
 
                         do {
                             cout << "Please enter new quantity in inventory: ";
-                            if (cin >> newQuantity) {
-                                cin.ignore();
-                                validQuantity = true;
+                            cin >> newQuantity;
+                            if (cin.good()) {
+                                if (newQuantity > 0) {
+                                    cin.ignore();
+                                    validQuantity = true;
+                                } else if (newQuantity < 0) {
+                                    cout << "Minimum value of 0." << endl;
+                                    cin.clear();
+                                    cin.ignore();
+                                }
                             } else {
                                 cout << "Not a valid quantity." << endl;
                                 cin.clear();
