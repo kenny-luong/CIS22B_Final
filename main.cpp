@@ -23,7 +23,7 @@
 /*********************
 **      Functional To-Do List
 **
-** - Inherittance / Polymorphism
+** - Polymorphism
 **********************
 **   Cosmetic To-Do List - gotta make dat shit pretty
 **  [x] main menu
@@ -40,26 +40,25 @@
 **      Error List
 **
 ** 1. Missing books.txt
+** 2. Missing admin.txt
+** 3. Missing employee.txt
 ***********************/
 
 using namespace std;
 
-//GLOBALS
-
-int sizeOfArray();
-int sizeOfLogin();
 //menu prototypes
 void inventoryMenu(int);
 void cashierMenu();
 void reportMenu();
 //cashier protoype
-void addToCart();
+void addToCart(int);
 //inventory prototypes
 void addBook();
 void editBook();
 void deleteBook();
 void saveBook();
 bool loadBook();
+void displayBook(int);
 //report prototypes
 void inventoryReport();
 void wholesaleReport();
@@ -67,28 +66,35 @@ void retailReport();
 void quantityReport();
 void costReport();
 void ageReport();
-//misc prototype
-string toLower(string);
-string currentDateTime();
+//login prototype
 int login();
-void loadAdmin();
 int sizeOfAdmin();
 int sizeOfEmployee();
+void loadAdmin();
 void loadEmployee();
+//misc
+int sizeOfArray();
+int searchBook(string);
+string currentDateTime();
+string toLower(string);
+
+
+
+//GLOBALS
 
 string emptyStr; //used for menu navigation
-
+int validLogin;
 int arraySize = sizeOfArray();
 int adminSize = sizeOfAdmin();
 int employeeSize = sizeOfEmployee();
 int cartSize = 0;
+int currentEmployee;
 Book *tempBook = new Book;
 Book *bookArray = new Book[arraySize];
 Book *cart = new Book[cartSize];
 Admin *tempAdmin = new Admin;
 Admin *admin = new Admin[adminSize];
 Employee *employee = new Employee[employeeSize];
-
 Employee  *tempEmployee = new Employee;
 
 
@@ -119,8 +125,9 @@ int main() {
 
     loadAdmin();
     loadEmployee();
+    cout << admin[0].getUsername() << endl << admin[0].getPassword() << endl << admin[0].getAdminCode() << endl;
     bool isValid = false, loginScreen = true;
-    int validLogin;
+
     do {
         isValid = false;
         do {
@@ -141,17 +148,18 @@ int main() {
         int mainChoice = 0;
         do{
             system("cls");
-            std::cout << endl << endl << endl << endl << endl;
-            std::cout << setw(50) << "Serendipity Booksellers" << endl;
-            std::cout << setw(43) << "Main Menu" << endl;
-            std::cout << endl;
-            std::cout << setw(49) << "1. Inventory Database" << endl;
-            std::cout << setw(48) << "2. Cashier Interface" << endl;
-            std::cout << setw(38) << "3. Reports" << endl;
-            std::cout << setw(37) << "4. Logout" << endl;
-            std::cout << setw(43) << "5. Exit Program" << endl;
-            std::cout << endl << endl;
-            std::cout << setw(47) << "Enter your choice: ";
+            cout << "Current user: ";
+            (validLogin == 1) ? cout << admin[currentEmployee].getUsername() : cout << employee[currentEmployee].getUsername();
+            cout << endl << endl << endl << endl << endl;
+            cout << setw(50) << "Serendipity Booksellers" << endl;
+            cout << setw(43) << "Main Menu" << endl << endl;
+            cout << setw(49) << "1. Inventory Database" << endl;
+            cout << setw(48) << "2. Cashier Interface" << endl;
+            cout << setw(38) << "3. Reports" << endl;
+            cout << setw(37) << "4. Logout" << endl;
+            cout << setw(43) << "5. Exit Program" << endl;
+            cout << endl << endl;
+            cout << setw(47) << "Enter your choice: ";
 
             if (cin >> mainChoice) {
                 system("cls");
@@ -185,242 +193,35 @@ int main() {
     } while (loginScreen == true);
 
 }
-
-int sizeOfAdmin() {
-    ifstream inputFile;
-    string temp;
-    int counter = 0;
-    inputFile.open("admin.txt");
-
-
-    while (inputFile >> temp) {
-        counter++;
-    }
-    inputFile.close();
-
-    return counter/2;
-}
-
-int sizeOfEmployee() {
-    ifstream inputFile;
-    string temp;
-    int counter = 0;
-    try {
-        inputFile.open("employee.txt");
-        if (!inputFile.is_open()) {
-            throw 4;
-        }
-    } catch (int z) {
-        cout << "Error: " << z << endl;
-    }
-
-    while (inputFile >> temp) {
-        counter++;
-    }
-    inputFile.close();
-
-    return counter/2;
-}
-
-void loadAdmin() {
-    ifstream adminFile;
-    try {
-        adminFile.open("admin.txt", ios::in);
-        if (!adminFile.is_open()) {
-            throw 2;
-        }
-    } catch (int x) {
-        cout << "Error: " << x << endl;
-    }
-
-    adminFile.close();
-
-    adminFile.open("admin.txt", ios::in);
-    string temp;
-    int i = 0;
-    while (i < adminSize) {
-        adminFile >> temp;
-        tempAdmin->setUsername(temp);
-        adminFile >> temp;
-        tempAdmin->setPassword(temp);
-
-        admin[i] = *tempAdmin;
-        i++;
-    }
-
-    adminFile.close();
-
-}
-
-void loadEmployee() {
-    ifstream employeeFile;
-    try {
-        employeeFile.open("employee.txt", ios::in);
-        if (!employeeFile.is_open()) {
-            throw 2;
-        }
-    } catch (int x) {
-        cout << "Error: " << x << endl;
-    }
-
-    employeeFile.close();
-
-    employeeFile.open("employee.txt", ios::in);
-    string temp;
-    int i = 0;
-    while (i < employeeSize) {
-        employeeFile >> temp;
-        tempEmployee->setUsername(temp);
-        employeeFile >> temp;
-        tempEmployee->setPassword(temp);
-
-        employee[i] = *tempEmployee;
-        i++;
-    }
-
-    employeeFile.close();
-
-}
-
-
-int login() {
-    system("CLS");
-
-    ifstream adminFile;
-    ifstream employeeFile;
-    try {
-        adminFile.open("admin.txt", ios::in);
-        if (!adminFile.is_open()) {
-            throw 2;
-        }
-    } catch (int x) {
-        cout << "Error: " << x << endl;
-    }
-
-    try {
-        employeeFile.open("employee.txt", ios::in);
-        if (!employeeFile.is_open()) {
-            throw 3;
-        }
-    } catch (int y) {
-        cout << "Error: " << y << endl;
-    }
-
-
-    string username, password, adminCode;
-    std::cout << endl << endl << endl << endl << endl << endl << endl;
-    char input = ' ';
-    cout << setw(40) << "Username: ";
-    cin >> username;
-    cout << setw(40) << "Password: ";
-
-    while (input !=  13) {
-        input = getch();
-        if (input != 13) {
-            password += input;
-            cout << '*';
-        }
-    }
-
-    for (int i = 0; i < adminSize; i++) {
-        if (username == admin[i].getUsername() && password == admin[i].getPassword()) {
-            return 1;
-        }
-    }
-
-    for (int i = 0; i < employeeSize; i++) {
-         if (username == employee[i].getUsername() && password == employee[i].getPassword()) {
-            return 2;
-        }
-    }
-    return 3;
-}
-
-string currentDateTime() {
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
-    tstruct = *localtime(&now);
-    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
-
-    return buf;
-}
-
-// This function is meant to actually display the contents of the array we've loaded in loadBook.
-void displayBook(int i) {
-    if (i == -1) {
-        std::cout << "Book was not found." << std::endl;
-    }
-    else {
-
-        std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
-        std::cout << setw(25) << left << "ISBN:" << setw(20) << right << bookArray[i].getISBN() << std::endl;
-        std::cout << setw(25) << left << "Author:" << setw(20) << right << bookArray[i].getAuthor() << std::endl;
-        std::cout << setw(25) << left << "Publisher:" << setw(20) << right << bookArray[i].getPublisher() << std::endl;
-        std::cout << setw(25) << left << "Date Added (mmddyyyy):" << setw(20) << right << bookArray[i].getDateAdded() << std::endl;
-        std::cout << setw(25) << left << "Retail Price:" << setw(20) << right << bookArray[i].getRetail() << std::endl;
-        std::cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << std::endl;
-        std::cout << setw(25) << left << "Quantity in inventory:" << setw(20) << right << bookArray[i].getQuantity() << std::endl;
-        std::cout << setfill(' ');
-    }
-}
-
-// This function is strictly to return the position of the book within the array loaded with loadBook().
-
-string toLower(string input) {
-    int length = input.length();
-    for (int i = 0; i < length; i++) {
-        input[i] = tolower(input[i]);
-    }
-
-    return input;
-}
-
-int searchBook(std::string searchCriteria) {
-    for (int i = 0; i < arraySize; i++) {
-        if (toLower(searchCriteria) == toLower(bookArray[i].getTitle()) || searchCriteria == bookArray[i].getISBN()) {
-            return i;
-        }
-    }
-    return -1;
-}
-
-
-void addToCart(int position) {
-    if (position != -1) {
-        addToArray(cart, cartSize);
-        cart[cartSize-1] = bookArray[position];
-    } else {
-        cout << "Unable to add to cart." << endl;
-    }
-}
-
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/*******************************************
+**          Main Menu Functions
+********************************************/
 void inventoryMenu(int validLogin)
 {
     int inventoryExit = 0;
     do {
         system("CLS");
-        std::cout << endl << endl << endl << endl << endl;
-        std::cout << setw(50) << "Serendipity Booksellers" << endl;
-        std::cout << setw(47) << "Inventory Database" << endl;
-        std::cout << endl;
-        std::cout << setw(46) << "1. Look up a book" << endl;
-        std::cout << setw(42) << "2. Add a book" << endl;
-        std::cout << setw(43) << "3. Edit a book" << endl;
-        std::cout << setw(45) << "4. Delete a book" << endl;
-        std::cout << setw(51) << "5. Return to main menu" << endl;
-        std::cout << endl << endl;
-        std::cout << setw(47) << "Enter your choice: ";
+        cout << endl << endl << endl << endl << endl;
+        cout << setw(50) << "Serendipity Booksellers" << endl;
+        cout << setw(47) << "Inventory Database" << endl;
+        cout << endl;
+        cout << setw(46) << "1. Look up a book" << endl;
+        cout << setw(42) << "2. Add a book" << endl;
+        cout << setw(43) << "3. Edit a book" << endl;
+        cout << setw(45) << "4. Delete a book" << endl;
+        cout << setw(51) << "5. Return to main menu" << endl;
+        cout << endl << endl;
+        cout << setw(47) << "Enter your choice: ";
         int inventoryChoice;
         if (cin >> inventoryChoice) {
             cin.ignore();
             system("CLS");
             switch (inventoryChoice) {
                 case 1:{   // look up a book
-                    std::string query;
-                    std::cout << "Enter the title or ISBN of the book: ";
-                    std::getline(std::cin, query);
+                    string query;
+                    cout << "Enter the title or ISBN of the book: ";
+                    getline(cin, query);
                     displayBook(searchBook(query));
                     cout << endl << "Press enter to return to the inventory menu";
                     getline(cin, emptyStr);
@@ -473,7 +274,7 @@ void inventoryMenu(int validLogin)
         }
     } while (inventoryExit == 0);
 }
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void cashierMenu()
 {
     int cashierExit = 0;
@@ -575,6 +376,8 @@ void cashierMenu()
                     cout << left << setw(8) << "Count: " << setw(15) << "ISBN: "
                         << setw(25) << "Title: " << setw(13) << right
                         << "Retail Price: " << setw(13) << "Total: " << endl;
+                    log << "User: ";
+                    (validLogin == 1) ? log << admin[currentEmployee].getUsername() << endl : log << employee[currentEmployee].getUsername() << endl;
                     log << "Current Date: " << currentDateTime() << endl << endl;
                     log << left << setw(8) << "Count: " << setw(15) << "ISBN: "
                         << setw(25) << "Title: " << setw(13) << right
@@ -664,27 +467,28 @@ void cashierMenu()
 
     log.close();
 }
+////////////////////////////////////////////////////////////////////////////////////////////////////
 void reportMenu()
 {
     int reportExit = 0;
     do {
         system("CLS");
-        std::cout << endl << endl << endl << endl << endl;
-        std::cout << setw(50) << "Serendipity Booksellers" << endl;
-        std::cout << setw(47) << "Report Generator" << endl;
-        std::cout << endl;
-        std::cout << setw(47) << "Select the report" << endl;
-        std::cout << setw(49) << "you want to generate" << endl;
-        std::cout << endl;
-        std::cout << setw(47) << "1. Inventory Listing" << endl;
-        std::cout << setw(55) << "2. Inventory Wholesale Value" << endl;
-        std::cout << setw(52) << "3. Inventory Retail Value" << endl;
-        std::cout << setw(49) << "4. Listing by Quantity" << endl;
-        std::cout << setw(45) << "5. Listing by Cost" << endl;
-        std::cout << setw(44) << "6. Listing by Age" << endl;
-        std::cout << setw(49) << "7. Return to Main Menu" << endl;
-        std::cout << endl << endl;
-        std::cout << setw(47) << "Enter your choice: ";
+        cout << endl << endl << endl << endl << endl;
+        cout << setw(50) << "Serendipity Booksellers" << endl;
+        cout << setw(47) << "Report Generator" << endl;
+        cout << endl;
+        cout << setw(47) << "Select the report" << endl;
+        cout << setw(49) << "you want to generate" << endl;
+        cout << endl;
+        cout << setw(47) << "1. Inventory Listing" << endl;
+        cout << setw(55) << "2. Inventory Wholesale Value" << endl;
+        cout << setw(52) << "3. Inventory Retail Value" << endl;
+        cout << setw(49) << "4. Listing by Quantity" << endl;
+        cout << setw(45) << "5. Listing by Cost" << endl;
+        cout << setw(44) << "6. Listing by Age" << endl;
+        cout << setw(49) << "7. Return to Main Menu" << endl;
+        cout << endl << endl;
+        cout << setw(47) << "Enter your choice: ";
         int reportChoice = 0;
         if (cin >> reportChoice) {
             cin.ignore();
@@ -723,116 +527,24 @@ void reportMenu()
 
     } while (reportExit == 0);
 }
-
-// This needs to be at the beginning of main. No exceptions. This loads the information from our database file into an array.
-
-bool loadBook() {
-    std::ifstream bookDatabase;
-    try {
-        bookDatabase.open("books.txt", std::ios::in);
-        if (!bookDatabase.is_open()) {
-            throw 1;
-        }
-    } catch (int x) {
-        cout << "Error: " << x << ". books.txt could not be located." << endl;
-        cout << "Program terminating..." << endl;
-        system("pause");
-        return 0;
+////////////////////////////////////////////////////////////////////////////////////////////////////
+/********************************
+**      Cash Register Functions
+*********************************/
+////////////////////////////////////////////////////////////////////////////////////////////////////
+void addToCart(int position) {
+    if (position != -1) {
+        addToArray(cart, cartSize);
+        cart[cartSize-1] = bookArray[position];
+    } else {
+        cout << "Unable to add to cart." << endl;
     }
-
-    std::string tempInput;
-
-    bookDatabase.close();
-
-    bookDatabase.open("books.txt", std::ios::in);
-
-    int i = 0;
-    double temp1;
-    int temp2;
-    std::string garbage;
-
-    while (i < arraySize) {
-        std::getline(bookDatabase, tempInput);
-        tempBook->setTitle(tempInput);
-
-        std::getline(bookDatabase, tempInput);
-        tempBook->setISBN(tempInput);
-
-        std::getline(bookDatabase, tempInput);
-        tempBook->setAuthor(tempInput);
-
-        std::getline(bookDatabase, tempInput);
-        tempBook->setPublisher(tempInput);
-
-        std::getline(bookDatabase, tempInput);
-        tempBook->setDateAdded(tempInput);
-
-        bookDatabase >> temp1;
-        tempBook->setRetail(temp1);
-
-        bookDatabase >> temp1;
-        tempBook->setWholeSale(temp1);
-
-        bookDatabase >> temp2;
-        tempBook->setQuantity(temp2);
-
-        std::getline(bookDatabase, garbage); // this is purely to move onto the next line
-
-        bookArray[i] = *tempBook;
-        i++;
-    }
-
-    bookDatabase.close();
-    return 1;
 }
-
-// This function is what will determine the initial size of our array.
-
-int sizeOfArray() {
-    std::ifstream inputFile;
-
-    inputFile.open("books.txt", std::ios::in);
-
-    std::string temp;
-    int counter = 0;
-    while (std::getline(inputFile, temp)) {
-        counter++;
-    }
-    inputFile.close();
-    return counter / 8;
-}
-
-// This function will take the contents of the current defined array and rewrite our database file with the contents of the array.
-// WIll need to include this at the end of anything that modifies the array.
-
-void saveBook()
-{
-    ofstream output;
-    try {
-        output.open("books.txt");
-        if (!output.is_open()) {
-            throw 1;
-        }
-    } catch (int x) {
-        cout << "Error: " << x << ". books.txt is missing." << endl;
-        cout << "Restart program and locate books.txt and replace." << endl;
-    }
-    for (int count = 0; count < arraySize; count++)
-    {
-        output << bookArray[count].getTitle() << endl;
-        output << bookArray[count].getISBN() << endl;
-        output << bookArray[count].getAuthor() << endl;
-        output << bookArray[count].getPublisher() << endl;
-        output << bookArray[count].getDateAdded() << endl;
-        output << bookArray[count].getRetail() << endl;
-        output << bookArray[count].getWholeSale() << endl;
-        output << bookArray[count].getQuantity() << endl;
-    }
-    output.close();
-}
-
-// This function creates a new array of a new size and copies the content of our current array over.
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
+/********************************
+**      Inventory Functions
+*********************************/
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void addBook()
 {
     addToArray(bookArray, arraySize);
@@ -846,13 +558,13 @@ void addBook()
          validWholeSale = false,
          validRetail = false;
 
-    std::cout << "Title: ";
-    std::getline(std::cin, temptitle);
+    cout << "Title: ";
+    getline(cin, temptitle);
     bookArray[arraySize-1].setTitle(temptitle);
 
     do {
-        std::cout << endl << "ISBN: ";
-        std::getline(std::cin, tempisbn);
+        cout << endl << "ISBN: ";
+        getline(cin, tempisbn);
         if (tempisbn.length() == 11 || tempisbn.length() == 13) {
             bookArray[arraySize-1].setISBN(tempisbn);
             validISBN = true;
@@ -861,22 +573,22 @@ void addBook()
         }
     } while (validISBN == false);
 
-    std::cout << endl << "Author: ";
-    std::getline(std::cin, tempauthor);
+    cout << endl << "Author: ";
+    getline(cin, tempauthor);
     bookArray[arraySize-1].setAuthor(tempauthor);
 
-    std::cout << endl << "Publisher: ";
-    std::getline(std::cin, temppublisher);
+    cout << endl << "Publisher: ";
+    getline(cin, temppublisher);
     bookArray[arraySize-1].setPublisher(temppublisher);
 
-    std::cout << endl << "Date added: ";
-    std::getline(std::cin, tempdate);
+    cout << endl << "Date added: ";
+    getline(cin, tempdate);
     bookArray[arraySize-1].setDateAdded(tempdate);
 
     do {
-        std::cout << endl << "Retail Price: ";
-        if (std::cin >> tempretail) {
-            std::cin.ignore();
+        cout << endl << "Retail Price: ";
+        if (cin >> tempretail) {
+            cin.ignore();
             bookArray[arraySize-1].setRetail(tempretail);
             validRetail = true;
         } else {
@@ -888,9 +600,9 @@ void addBook()
 
 
     do {
-        std::cout << endl << "Wholesale Price: ";
-        if (std::cin >> tempwholesale) {
-            std::cin.ignore();
+        cout << endl << "Wholesale Price: ";
+        if (cin >> tempwholesale) {
+            cin.ignore();
             bookArray[arraySize-1].setWholeSale(tempwholesale);
             validWholeSale = true;
         } else {
@@ -901,8 +613,8 @@ void addBook()
     } while (validWholeSale == false);
 
     do {
-        std::cout << endl << "Quantity: ";
-        if (std::cin >> tempquantity) {
+        cout << endl << "Quantity: ";
+        if (cin >> tempquantity) {
             cin.ignore();
             bookArray[arraySize-1].setQuantity(tempquantity);
             validQuantity = true;
@@ -914,84 +626,35 @@ void addBook()
 
     } while (validQuantity == false);
 
-
-
-    saveBook();
-    cout << endl << endl;
-    cout << "----------------" << bookArray[arraySize - 1].getTitle() << " ADDED----------------" << endl;
-    displayBook(arraySize - 1);
-}
-
-void deleteBook()
-{
-    char repeat;
-    bool deleteRepeat = true;
-    int deleteSelect = 0;
+    string adminCode;
+    bool isValid = false;
     do {
-        system("CLS");
-        string deleteQuery;
-        std::cout << "Please enter title or ISBN to delete: " << std::endl;
-        std::getline(cin, deleteQuery);
-
-        int deleteLocation;
-
-        deleteLocation = searchBook(deleteQuery);
-        if (deleteLocation != -1)
-        {
-            cout << "Please select:" << endl;
-            cout << "1) Remove all copies of " << bookArray[deleteLocation].getTitle() << endl;
-            cout << "2) Return to previous screen" << endl;
-            if (cin >> deleteSelect) {
-                cin.ignore();
-                switch (deleteSelect)
-                {
-                case 1:
-                    cout << "Removing all copies..." << endl;
-                    bookArray[deleteLocation].setQuantity(0);
-                    cout << "All copies removed." << endl;
-                    break;
-                case 2:
-                    cout << "Cancelling..." << endl;
-                    break;
-                }
-                cout << "Would you like to delete another entry? (Y/N): " << endl;
-                if (cin >> repeat) {
-                    cin.ignore();
-                    switch (repeat) {
-                    case 'Y':
-                    case 'y':
-                        saveBook();
-                        break;
-                    case 'N':
-                    case 'n':
-                        saveBook();
-                        deleteRepeat = false;
-                        break;
-                    default:
-                        break;
-                    }
-                }
-            } else {
-                cin.clear();
-                cin.ignore();
-            }
+        cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+        cin >> adminCode;
+        if (adminCode == admin[currentEmployee].getAdminCode()) {
+            isValid = true;
+            saveBook();
+            cout << endl << endl;
+            cout << "----------------" << bookArray[arraySize - 1].getTitle() << " ADDED----------------" << endl;
+            displayBook(arraySize - 1);
+            system("PAUSE");
+        } else if (adminCode == "x" || adminCode == "X") {
+            isValid = true;
         }
-        else {
-            cout << "Book could not be found." << endl;
-            system("pause");
-        }
-    } while (deleteRepeat == true);
+    } while (isValid == false);
+
+
 }
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void editBook()
 {
     bool repeat = true;
     do {
         system("CLS");
         string editQuery;
-        std::cout << "Please enter title or ISBN to edit: " << std::endl;
+        cout << "Please enter title or ISBN to edit: " << endl;
 
-        std::getline(cin, editQuery);
+        getline(cin, editQuery);
 
         int editLocation;
 
@@ -1003,7 +666,7 @@ void editBook()
             int editSelect;
             do {
                 system("CLS");
-                std::cout << "Please select attribute to edit: " << endl;
+                cout << "Please select attribute to edit: " << endl;
                 cout << "1) Title" << endl;
                 cout << "2) ISBN" << endl;
                 cout << "3) Author" << endl;
@@ -1022,48 +685,125 @@ void editBook()
                     int newQuantity;
                     switch (editSelect)
                     {
-                    case 1:
+                    case 1: {
                         cout << "Please enter new title: ";
                         getline(cin, newTitle);
-                        bookArray[editLocation].setTitle(newTitle);
+                        string adminCode;
+                        bool isValid = false;
+                        do {
+                            cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                            cin >> adminCode;
+                            if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                isValid = true;
+                                bookArray[editLocation].setTitle(newTitle);
+                                saveBook();
+                            } else if (adminCode == "x" || adminCode == "X") {
+                                isValid = true;
+                            }
+                        } while (isValid == false);
+                    }
                         break;
                     case 2: {
                         bool validISBN = false;
                         do {
-                            std::cout << endl << "ISBN: ";
-                            std::getline(std::cin, newISBN);
+                            cout << endl << "ISBN: ";
+                            getline(cin, newISBN);
                             if (newISBN.length() == 11 || newISBN.length() == 13) {
                                 validISBN = true;
-                                bookArray[editLocation].setISBN(newISBN);
+                                string adminCode;
+                                bool isValid = false;
+                                do {
+                                    cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                                    cin >> adminCode;
+                                    if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                        isValid = true;
+                                        bookArray[editLocation].setISBN(newISBN);
+                                        saveBook();
+                                    } else if (adminCode == "x" || adminCode == "X") {
+                                        isValid = true;
+                                    }
+                                } while (isValid == false);
+
                             } else {
                                 cout << "Invalid ISBN. ISBN must be 11 or 13 digits." << endl;
                             }
                         } while (validISBN == false);
                         break;
                     }
-                    case 3:
+                    case 3: {
                         cout << "Please enter new author: ";
                         getline(cin, newAuthor);
-                        bookArray[editLocation].setAuthor(newAuthor);
+                        string adminCode;
+                        bool isValid = false;
+                        do {
+                            cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                            cin >> adminCode;
+                            if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                isValid = true;
+                                bookArray[editLocation].setAuthor(newAuthor);
+                                saveBook();
+                            } else if (adminCode == "x" || adminCode == "X") {
+                                isValid = true;
+                            }
+                        } while (isValid == false);
+                    }
                         break;
-                    case 4:
+                    case 4: {
                         cout << "Please enter new publisher: ";
                         getline(cin, newPublisher);
-                        bookArray[editLocation].setPublisher(newPublisher);
+                        string adminCode;
+                        bool isValid = false;
+                        do {
+                            cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                            cin >> adminCode;
+                            if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                isValid = true;
+                                bookArray[editLocation].setPublisher(newPublisher);
+                                saveBook();
+                            } else if (adminCode == "x" || adminCode == "X") {
+                                isValid = true;
+                            }
+                        } while (isValid == false);
+                    }
                         break;
-                    case 5:
+                    case 5: {
                         cout << "Please enter new date added (mmddyyyy): ";
-                        getline(std::cin, newDateAdded);
-                        bookArray[editLocation].setDateAdded(newDateAdded);
+                        getline(cin, newDateAdded);
+                        string adminCode;
+                        bool isValid = false;
+                        do {
+                            cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                            cin >> adminCode;
+                            if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                isValid = true;
+                                bookArray[editLocation].setDateAdded(newDateAdded);
+                                saveBook();
+                            } else if (adminCode == "x" || adminCode == "X") {
+                                isValid = true;
+                            }
+                        } while (isValid == false);
+                    }
                         break;
                     case 6: {
                         bool validRetail = false;
                         do {
-                            std::cout << endl << "Retail Price: ";
-                            if (std::cin >> newRetail) {
-                                std::cin.ignore();
+                            cout << endl << "Retail Price: ";
+                            if (cin >> newRetail) {
+                                cin.ignore();
                                 validRetail = true;
-                                bookArray[editLocation].setRetail(newRetail);
+                                string adminCode;
+                                bool isValid = false;
+                                do {
+                                    cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                                    cin >> adminCode;
+                                    if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                        isValid = true;
+                                        bookArray[editLocation].setRetail(newRetail);
+                                        saveBook();
+                                    } else if (adminCode == "x" || adminCode == "X") {
+                                        isValid = true;
+                                    }
+                                } while (isValid == false);
                             } else {
                                 cout << "Not a valid retail price." << endl;
                                 cin.clear();
@@ -1080,7 +820,19 @@ void editBook()
                             if (cin >> newWholeSale) {
                                 cin.ignore();
                                 validWholeSale = true;
-                                bookArray[editLocation].setWholeSale(newWholeSale);
+                                string adminCode;
+                                bool isValid = false;
+                                do {
+                                    cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                                    cin >> adminCode;
+                                    if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                        isValid = true;
+                                        bookArray[editLocation].setWholeSale(newWholeSale);
+                                        saveBook();
+                                    } else if (adminCode == "x" || adminCode == "X") {
+                                        isValid = true;
+                                    }
+                                } while (isValid == false);
                             } else {
                                 cout << "Not a valid wholesale price." << endl;
                                 cin.clear();
@@ -1097,7 +849,19 @@ void editBook()
                         if (cin >> newQuantity) {
                             cin.ignore();
                             validQuantity = true;
-                            bookArray[editLocation].setQuantity(newQuantity);
+                            string adminCode;
+                            bool isValid = false;
+                            do {
+                                cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                                cin >> adminCode;
+                                if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                    isValid = true;
+                                    bookArray[editLocation].setQuantity(newQuantity);
+                                    saveBook();
+                                } else if (adminCode == "x" || adminCode == "X") {
+                                    isValid = true;
+                                }
+                            } while (isValid == false);
                         } else {
                             cout << "Not a valid quantity." << endl;
                             cin.clear();
@@ -1164,14 +928,26 @@ void editBook()
                             }
                         } while (validQuantity == false);
 
-                        bookArray[editLocation].setTitle(newTitle);
-                        bookArray[editLocation].setISBN(newISBN);
-                        bookArray[editLocation].setAuthor(newAuthor);
-                        bookArray[editLocation].setPublisher(newPublisher);
-                        bookArray[editLocation].setDateAdded(newDateAdded);
-                        bookArray[editLocation].setRetail(newRetail);
-                        bookArray[editLocation].setWholeSale(newWholeSale);
-                        bookArray[editLocation].setQuantity(newQuantity);
+                        string adminCode;
+                        bool isValid = false;
+
+                        do {
+                            cout << "Enter Admin Code to verify (Enter 'x' to exit): ";
+                            cin >> adminCode;
+                            if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                isValid = true;
+                                bookArray[editLocation].setTitle(newTitle);
+                                bookArray[editLocation].setISBN(newISBN);
+                                bookArray[editLocation].setAuthor(newAuthor);
+                                bookArray[editLocation].setPublisher(newPublisher);
+                                bookArray[editLocation].setDateAdded(newDateAdded);
+                                bookArray[editLocation].setRetail(newRetail);
+                                bookArray[editLocation].setWholeSale(newWholeSale);
+                                bookArray[editLocation].setQuantity(newQuantity);
+                                saveBook();
+                            }
+                        } while (isValid == false);
+
                         break;
                     }
 
@@ -1180,9 +956,10 @@ void editBook()
                         screenRepeat = false;
                         break;
                     }
-                    saveBook();
+
+
                     char editAgain;
-                    cout << "\ncWould you like to edit another entry? (Y/N): ";
+                    cout << "\nWould you like to edit another entry? (Y/N): ";
                     cin >> editAgain;
                     cin.ignore();
                     switch (editAgain) {
@@ -1209,14 +986,189 @@ void editBook()
         }
     } while (repeat == true);
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void deleteBook()
+{
+    char repeat;
+    bool deleteRepeat = true;
+    int deleteSelect = 0;
+    do {
+        system("CLS");
+        string deleteQuery;
+        cout << "Please enter title or ISBN to delete: " << endl;
+        getline(cin, deleteQuery);
 
+        int deleteLocation;
 
+        deleteLocation = searchBook(deleteQuery);
+        if (deleteLocation != -1)
+        {
+            cout << "Please select:" << endl;
+            cout << "1) Remove all copies of " << bookArray[deleteLocation].getTitle() << endl;
+            cout << "2) Return to previous screen" << endl;
+            if (cin >> deleteSelect) {
+                cin.ignore();
+                switch (deleteSelect)
+                {
+                case 1: {
+                    string adminCode;
+                    bool isValid = false;
+                    do {
+                        cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                        cin >> adminCode;
+                        if (adminCode == admin[currentEmployee].getAdminCode()) {
+                            isValid = true;
+                            cout << "Removing all copies..." << endl;
+                            bookArray[deleteLocation].setQuantity(0);
+                            cout << "All copies removed." << endl;
+                            saveBook();
+                        } else if (adminCode == "x" || adminCode == "X") {
+                            isValid = true;
+                        }
+                    } while (isValid == false);
+                }
+                    break;
+                case 2:
+                    cout << "Cancelling..." << endl;
+                    break;
+                }
+                cout << "Would you like to delete another entry? (Y/N): " << endl;
+                if (cin >> repeat) {
+                    cin.ignore();
+                    switch (repeat) {
+                    case 'Y':
+                    case 'y':
+                        break;
+                    case 'N':
+                        deleteRepeat = false;
+                        break;
+                    default:
+                        break;
+                    }
+                }
+                break;
+            } else {
+                cin.clear();
+                cin.ignore();
+            }
+        }
+        else {
+            cout << "Book could not be found." << endl;
+            system("pause");
+        }
+    } while (deleteRepeat == true);
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void saveBook()
+{
+    ofstream output;
+    try {
+        output.open("books.txt");
+        if (!output.is_open()) {
+            throw 1;
+        }
+    } catch (int x) {
+        cout << "Error: " << x << ". books.txt is missing." << endl;
+        cout << "Restart program and locate books.txt and replace." << endl;
+    }
+    for (int count = 0; count < arraySize; count++)
+    {
+        output << bookArray[count].getTitle() << endl;
+        output << bookArray[count].getISBN() << endl;
+        output << bookArray[count].getAuthor() << endl;
+        output << bookArray[count].getPublisher() << endl;
+        output << bookArray[count].getDateAdded() << endl;
+        output << bookArray[count].getRetail() << endl;
+        output << bookArray[count].getWholeSale() << endl;
+        output << bookArray[count].getQuantity() << endl;
+    }
+    output.close();
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+bool loadBook() {
+    ifstream bookDatabase;
+    try {
+        bookDatabase.open("books.txt", ios::in);
+        if (!bookDatabase.is_open()) {
+            throw 1;
+        }
+    } catch (int x) {
+        cout << "Error: " << x << ". books.txt could not be located." << endl;
+        cout << "Program terminating..." << endl;
+        system("pause");
+        return 0;
+    }
+
+    string tempInput;
+
+    bookDatabase.close();
+
+    bookDatabase.open("books.txt", ios::in);
+
+    int i = 0;
+    double temp1;
+    int temp2;
+    string garbage;
+
+    while (i < arraySize) {
+        getline(bookDatabase, tempInput);
+        tempBook->setTitle(tempInput);
+
+        getline(bookDatabase, tempInput);
+        tempBook->setISBN(tempInput);
+
+        getline(bookDatabase, tempInput);
+        tempBook->setAuthor(tempInput);
+
+        getline(bookDatabase, tempInput);
+        tempBook->setPublisher(tempInput);
+
+        getline(bookDatabase, tempInput);
+        tempBook->setDateAdded(tempInput);
+
+        bookDatabase >> temp1;
+        tempBook->setRetail(temp1);
+
+        bookDatabase >> temp1;
+        tempBook->setWholeSale(temp1);
+
+        bookDatabase >> temp2;
+        tempBook->setQuantity(temp2);
+
+        getline(bookDatabase, garbage); // this is purely to move onto the next line
+
+        bookArray[i] = *tempBook;
+        i++;
+    }
+
+    bookDatabase.close();
+    return 1;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void displayBook(int i) {
+    if (i == -1) {
+        cout << "Book was not found." << endl;
+    }
+    else {
+
+        cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << endl;
+        cout << setw(25) << left << "ISBN:" << setw(20) << right << bookArray[i].getISBN() << endl;
+        cout << setw(25) << left << "Author:" << setw(20) << right << bookArray[i].getAuthor() << endl;
+        cout << setw(25) << left << "Publisher:" << setw(20) << right << bookArray[i].getPublisher() << endl;
+        cout << setw(25) << left << "Date Added (mmddyyyy):" << setw(20) << right << bookArray[i].getDateAdded() << endl;
+        cout << setw(25) << left << "Retail Price:" << setw(20) << right << bookArray[i].getRetail() << endl;
+        cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << endl;
+        cout << setw(25) << left << "Quantity in inventory:" << setw(20) << right << bookArray[i].getQuantity() << endl;
+        cout << setfill(' ');
+    }
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
 /****************************************
 *****************************************
 **********  REPORT FUNCTIONS  ***********
 *****************************************
 ****************************************/
-
+///////////////////////////////////////////////////////////////////////////////////////////////////
 void bookSort(string sortBy) {
     int start, maxIndex;
     Book tempBook;
@@ -1287,14 +1239,14 @@ void wholesaleReport()
     system("cls");
     double totalWholesale = 0;
     for (int i = 0; i < arraySize; i++) {
-        std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
-        std::cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << std::endl;
-        std::cout << setw(25) << left << "Quantity: " << setw(20) << right << bookArray[i].getQuantity() << std::endl;
+        cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << endl;
+        cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << endl;
+        cout << setw(25) << left << "Quantity: " << setw(20) << right << bookArray[i].getQuantity() << endl;
         totalWholesale += bookArray[i].getWholeSale()*bookArray[i].getQuantity();
         cout << "==================================================" << endl;
     }
     cout << "==================================================" << endl;
-    cout << setw(25) << left << "Total Wholesale Value:" << setw(20) << right << totalWholesale << std::endl;
+    cout << setw(25) << left << "Total Wholesale Value:" << setw(20) << right << totalWholesale << endl;
     cout << setfill(' ');
     cout << endl << "Press enter to return to the Reports menu";
     getline(cin, emptyStr);
@@ -1305,14 +1257,14 @@ void retailReport()
     system("cls");
     double totalRetail = 0;
     for (int i = 0; i < arraySize; i++) {
-        std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
-        std::cout << setw(25) << left << "Retail Price:" << setw(20) << right << bookArray[i].getRetail() << std::endl;
-        std::cout << setw(25) << left << "Quantity: " << setw(20) << right << bookArray[i].getQuantity() << std::endl;
+        cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << endl;
+        cout << setw(25) << left << "Retail Price:" << setw(20) << right << bookArray[i].getRetail() << endl;
+        cout << setw(25) << left << "Quantity: " << setw(20) << right << bookArray[i].getQuantity() << endl;
         totalRetail += bookArray[i].getRetail()*bookArray[i].getQuantity();
         cout << "==================================================" << endl;
     }
     cout << "==================================================" << endl;
-    cout << setw(25) << left << "Total Retail Value:" << setw(20) << right << totalRetail << std::endl;
+    cout << setw(25) << left << "Total Retail Value:" << setw(20) << right << totalRetail << endl;
     cout << setfill(' ');
     cout << endl << "Press enter to return to the Reports menu";
     getline(cin, emptyStr);
@@ -1323,8 +1275,8 @@ void quantityReport()
     system("cls");
     bookSort("quantity");
     for (int i = 0; i < arraySize; i++) {
-        std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
-        std::cout << setw(25) << left << "Quantity:" << setw(20) << right << bookArray[i].getQuantity() << std::endl;
+        cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << endl;
+        cout << setw(25) << left << "Quantity:" << setw(20) << right << bookArray[i].getQuantity() << endl;
         cout << "==================================================" << endl;
     }
     cout << setfill(' ');
@@ -1337,8 +1289,8 @@ void costReport()
     system("cls");
     bookSort("wholesale");
     for (int i = 0; i < arraySize; i++) {
-        std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
-        std::cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << std::endl;
+        cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << endl;
+        cout << setw(25) << left << "Wholesale Price:" << setw(20) << right << bookArray[i].getWholeSale() << endl;
         cout << "==================================================" << endl;
     }
     cout << setfill(' ');
@@ -1351,8 +1303,8 @@ void ageReport()
     system("cls");
     bookSort("age");
     for (int i = 0; i < arraySize; i++) {
-        std::cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << std::endl;
-        std::cout << setw(25) << left << "Date Added (mmddyyyy):" << setw(20) << right << bookArray[i].getDateAdded() << std::endl;
+        cout << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << bookArray[i].getTitle() << endl;
+        cout << setw(25) << left << "Date Added (mmddyyyy):" << setw(20) << right << bookArray[i].getDateAdded() << endl;
         cout << "==================================================" << endl;
     }
     cout << setfill(' ');
@@ -1360,3 +1312,215 @@ void ageReport()
     getline(cin, emptyStr);
     system("cls");
 }
+///////////////////////////////////////////////////////////////////////////////////////////////////
+/****************************************************
+**                  Login Functions
+*****************************************************/
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int login() {
+    system("CLS");
+
+    ifstream adminFile;
+    ifstream employeeFile;
+    try {
+        adminFile.open("admin.txt", ios::in);
+        if (!adminFile.is_open()) {
+            throw 2;
+        }
+    } catch (int x) {
+        cout << "Error: " << x << endl;
+    }
+
+    try {
+        employeeFile.open("employee.txt", ios::in);
+        if (!employeeFile.is_open()) {
+            throw 3;
+        }
+    } catch (int y) {
+        cout << "Error: " << y << endl;
+    }
+
+
+    string username, password, adminCode;
+    cout << endl << endl << endl << endl << endl << endl << endl;
+    char input = ' ';
+    cout << setw(40) << "Username: ";
+    cin >> username;
+    cout << setw(40) << "Password: ";
+
+    while (input !=  13) {
+        input = getch();
+        if (input != 13) {
+            password += input;
+            cout << '*';
+        }
+    }
+
+    for (int i = 0; i < adminSize; i++) {
+        if (username == admin[i].getUsername() && password == admin[i].getPassword()) {
+            currentEmployee = i;
+            return 1;
+        }
+    }
+
+    for (int i = 0; i < employeeSize; i++) {
+         if (username == employee[i].getUsername() && password == employee[i].getPassword()) {
+            currentEmployee = i;
+            return 2;
+        }
+    }
+    return 3;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int sizeOfAdmin() {
+    ifstream inputFile;
+    string temp;
+    int counter = 0;
+    inputFile.open("admin.txt");
+
+
+    while (inputFile >> temp) {
+        counter++;
+    }
+    inputFile.close();
+
+    return counter/3;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int sizeOfEmployee() {
+    ifstream inputFile;
+    string temp;
+    int counter = 0;
+    try {
+        inputFile.open("employee.txt");
+        if (!inputFile.is_open()) {
+            throw 3;
+        }
+    } catch (int z) {
+        cout << "Error: " << z << endl;
+    }
+
+    while (inputFile >> temp) {
+        counter++;
+    }
+    inputFile.close();
+
+    return counter/2;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void loadAdmin() {
+    ifstream adminFile;
+    try {
+        adminFile.open("admin.txt", ios::in);
+        if (!adminFile.is_open()) {
+            throw 2;
+        }
+    } catch (int x) {
+        cout << "Error: " << x << endl;
+    }
+
+    adminFile.close();
+
+    adminFile.open("admin.txt", ios::in);
+    string temp;
+    int i = 0;
+    while (i < adminSize) {
+        adminFile >> temp;
+        tempAdmin->setUsername(temp);
+
+        adminFile >> temp;
+        tempAdmin->setPassword(temp);
+
+        adminFile >> temp;
+        tempAdmin->setAdminCode(temp);
+
+        admin[i] = *tempAdmin;
+        i++;
+    }
+
+    adminFile.close();
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+void loadEmployee() {
+    ifstream employeeFile;
+    try {
+        employeeFile.open("employee.txt", ios::in);
+        if (!employeeFile.is_open()) {
+            throw 3;
+        }
+    } catch (int x) {
+        cout << "Error: " << x << endl;
+    }
+
+    employeeFile.close();
+
+    employeeFile.open("employee.txt", ios::in);
+    string temp;
+    int i = 0;
+    while (i < employeeSize) {
+        employeeFile >> temp;
+        tempEmployee->setUsername(temp);
+        employeeFile >> temp;
+        tempEmployee->setPassword(temp);
+
+        employee[i] = *tempEmployee;
+        i++;
+    }
+
+    employeeFile.close();
+
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+/******************************
+**      Misc Functions
+*******************************/
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int sizeOfArray() {
+    ifstream inputFile;
+
+    inputFile.open("books.txt", ios::in);
+
+    string temp;
+    int counter = 0;
+    while (getline(inputFile, temp)) {
+        counter++;
+    }
+    inputFile.close();
+    return counter / 8;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+string currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    return buf;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+string toLower(string input) {
+    int length = input.length();
+    for (int i = 0; i < length; i++) {
+        input[i] = tolower(input[i]);
+    }
+
+    return input;
+}
+///////////////////////////////////////////////////////////////////////////////////////////////////
+int searchBook(string searchCriteria) {
+    for (int i = 0; i < arraySize; i++) {
+        if (toLower(searchCriteria) == toLower(bookArray[i].getTitle()) || searchCriteria == bookArray[i].getISBN()) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+
+
+
+
+
+
