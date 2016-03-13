@@ -1,40 +1,200 @@
-Harry Potter
-0123456789123
+East of Eden
+9780140144178
+John Steinbeck
+The Viking Press
+03122016
+19.99
+9.99
+10
+Brave New World
+9780060850524
+Alduous Huxley
+Chatto & Windus
+01022016
+24.99
+10.99
+7
+Harry Potter and the Sorcerer's Stone
+0747532699
 J.K. Rowling
-Publisher
-04021994
-24.99
-5.99
-30
-Book2
-ISBN2
-Author2
-Publisher2
-03072016
-24.99
-15.99
-246
-Book3
-ISBN3
-Author3
-Publisher3
-03062016
-24.99
-2.99
-8
-Book4
-ISBN4
-Author4
-Publisher4
-03062016
-29.99
-2.99
-0
-Book24
-1234567890123
-Author24
-Publisher24
-04021994
-24.99
+Bloomsbury
+02042016
+9.99
+4.99
+10
+Harry Potter and the Chamber of Secrets
+0747538492
+J.K. Rowling
+Bloomsbury
+02042016
+9.99
+4.99
+10
+Harry Potter and the Prisoner of Azkaban
+0747542155
+J.K. Rowling
+Bloomsbury
+02042016
+9.99
+4.99
+10
+Harry Potter and the Goblet of Fire
+0747546241
+J.K. Rowling
+Bloomsbury
+02042016
+9.99
+4.99
+10
+Harry Potter and the Order of the Phoenix
+0747551006
+J.K. Rowling
+Bloomsbury
+02042016
+9.99
+4.99
+10
+Harry Potter and the Half-Blood Prince
+0747581088
+J.K. Rowling
+Bloomsbury
+02042016
+9.99
+4.99
+10
+Harry Potter and the Deathly Hallows
+0545010225
+J.K. Rowling
+Bloomsbury
+02042016
+9.99
+4.99
+10
+Fahrenheit 451
+9780743247221
+Ray Bradbury
+Ballantine Books
+12192015
 12.99
+5.99
+7
+The Catcher in the Rye
+9788970120676
+J.D. Salinger
+Little, Brown and Company
+12042015
+9.99
+4.99
+4
+To Kill a Mockingbird
+9788931001990
+Harper Lee
+Warner Books, Inc
+02042016
+9.99
+4.99
+16
+The Great Gatsby
+9781597226769
+F. Scott Fitzgerald
+Charles Scribner's sons
+02042016
+9.99
+4.99
+18
+The Hunger Games
+9780439023528
+Suzanne Collins
+Scholastic Press
+03012016
+12.99
+4.99
+9
+Catching Fire
+9780545227247
+Suzanne Collins
+Scholastic Press
+03012016
+12.99
+4.99
+9
+Mockingjay
+9780439023511
+Suzanne Collins
+Scholastic Press
+03012016
+12.99
+4.99
+10
+Ulysses
+9781486143757
+James Joyce
+Sylvia Beach
+01162016
+14.99
+7.99
+3
+Moby-Dick
+9788460767923
+Herman Melville
+Harper & Brothers
+01162016
+14.99
+7.99
+4
+War and Peace
+9781586638146
+Leo Tolstoy
+The Russian Messenger
+01162016
+14.99
+7.99
 5
+The Odyssey
+9781476706856
+Nikos Kazantzakis
+Simon and Schuster
+01082016
+13.99
+6.99
+6
+The Adventures of Huckleberry Finn
+9780671420727
+Mark Twain
+Harper & Brothers
+01082016
+8.99
+3.99
+8
+The Iliad
+9781429958240
+Homer
+Farrar, Straus, and Giroux
+12042015
+8.99
+3.99
+2
+Crime and Punishment
+9781605205106
+Fyodor Dostoyevsky
+Cosimo, Inc.
+12042015
+9.99
+4.99
+4
+Pride and Prejudice
+9781443422598
+Jane Austen
+Harper Collins
+11302015
+9.99
+4.99
+8
+Of Mice and Men
+9781440633904
+John Steinbeck
+Penguin
+01062016
+7.99
+2.99
+7
