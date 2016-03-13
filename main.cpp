@@ -1343,16 +1343,21 @@ int login() {
 
     string username, password, adminCode;
     cout << endl << endl << endl << endl << endl << endl << endl;
-    char input = ' ';
+    char input = ' ';   
     cout << setw(40) << "Username: ";
     cin >> username;
     cout << setw(40) << "Password: ";
 
-    while (input !=  13) {
-        input = _getch();
-        if (input != 13) {
-            password += input;
-            cout << '*';
+    while ((input !=  13)) {
+        input = getch();
+        if ((input != 13)) {
+            if (input != '\b') {
+                cout << '*';
+                password += input;
+            } else if (input == '\b') {
+                cout << '\b' << ' ' << '\b';
+                password = password.substr(0, password.length()-1);
+            }
         }
     }
 
@@ -1517,10 +1522,3 @@ int searchBook(string searchCriteria) {
     }
     return -1;
 }
-
-
-
-
-
-
-
