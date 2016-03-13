@@ -24,6 +24,8 @@
 **      Functional To-Do List
 **
 ** - Polymorphism
+** - Check wholesale and retail prices. Make sure they're not negative.
+** - Display error message if wrong login details.
 **********************
 **   Cosmetic To-Do List - gotta make dat shit pretty
 **  [x] main menu
@@ -186,7 +188,7 @@ int main() {
                 }
             } else {
                 cin.clear();
-                cin.ignore();
+                cin.ignore(1000, '\n');
                 cout << "Not a valid input." << endl;
             }
         } while (x == 1);
@@ -270,7 +272,7 @@ void inventoryMenu(int validLogin)
             }
         } else {
             cin.clear();
-            cin.ignore();
+            cin.ignore(1000, '\n');
         }
     } while (inventoryExit == 0);
 }
@@ -328,8 +330,10 @@ void cashierMenu()
                         if (quantity > bookArray[position].getQuantity()) {
                             cout << "We only currently have " << bookArray[position].getQuantity() << " in stock." << endl;
                             cout << "Book was not added to cart." << endl;
-                        }
-                        else {
+                        } else if (quantity <= 0) {
+                            cout << "Book was not added to cart." << endl;
+                            cout << "Quantity must be minimum of 1." << endl;
+                        } else {
                             addToCart(position);
                             bookQuantity[counter] = quantity;
                             counter++;
@@ -339,12 +343,11 @@ void cashierMenu()
                         while (validResponse == false) {
                             cout << "Would you like to add another book? (Y/N): ";
                             cin >> repeat;
-                            cin.ignore();
                             switch (repeat) {
                             case 'Y':
                             case 'y':
+                                cin.ignore(1000, '\n');
                                 validResponse = true;
-
                                 break;
                             case 'N':
                             case 'n': {
@@ -354,6 +357,8 @@ void cashierMenu()
                             }
                             default: {
                                 cout << "That was not a valid input." << endl;
+                                cin.clear();
+                                cin.ignore(1000, '\n');
                                 break;
                             }
                             }
@@ -366,91 +371,98 @@ void cashierMenu()
                 break;
             }
             case 2: { // process transaction
-                bool validPayment = false;
-                double subtotal = 0, total, taxes, payment, change;
-                do {
-                    system("CLS");
-                    total = 0;
-                    subtotal = 0;
-                    cout << "Current Date: " << currentDateTime() << endl << endl;
-                    cout << left << setw(8) << "Count: " << setw(15) << "ISBN: "
-                        << setw(25) << "Title: " << setw(13) << right
-                        << "Retail Price: " << setw(13) << "Total: " << endl;
-                    log << "User: ";
-                    (validLogin == 1) ? log << admin[currentEmployee].getUsername() << endl : log << employee[currentEmployee].getUsername() << endl;
-                    log << "Current Date: " << currentDateTime() << endl << endl;
-                    log << left << setw(8) << "Count: " << setw(15) << "ISBN: "
-                        << setw(25) << "Title: " << setw(13) << right
-                        << "Retail Price: " << setw(13) << "Total: " << endl;
+                if (cartSize != 0) {
+                    bool validPayment = false;
+                    double subtotal = 0, total, taxes, payment, change;
+                    do {
+                        system("CLS");
+                        total = 0;
+                        subtotal = 0;
+                        cout << "Current Date: " << currentDateTime() << endl << endl;
+                        cout << left << setw(8) << "Count: " << setw(15) << "ISBN: "
+                            << setw(25) << "Title: " << setw(13) << right
+                            << "Retail Price: " << setw(13) << "Total: " << endl;
+                        log << "User: ";
+                        (validLogin == 1) ? log << admin[currentEmployee].getUsername() << endl : log << employee[currentEmployee].getUsername() << endl;
+                        log << "Current Date: " << currentDateTime() << endl << endl;
+                        log << left << setw(8) << "Count: " << setw(15) << "ISBN: "
+                            << setw(25) << "Title: " << setw(13) << right
+                            << "Retail Price: " << setw(13) << "Total: " << endl;
 
 
-                    for (int i = 0; i < cartSize; i++)
-                    {
-                        cout << right << setw(5) << bookQuantity[i] << "   " << setw(15) << left << cart[i].getISBN()
-                            << setw(25) << cart[i].getTitle() << setw(13) << right
-                            << cart[i].getRetail() << setw(13) << bookQuantity[i] * cart[i].getRetail() << endl;
+                        for (int i = 0; i < cartSize; i++)
+                        {
+                            cout << right << setw(5) << bookQuantity[i] << "   " << setw(15) << left << cart[i].getISBN()
+                                << setw(25) << cart[i].getTitle() << setw(13) << right
+                                << cart[i].getRetail() << setw(13) << bookQuantity[i] * cart[i].getRetail() << endl;
 
-                        log << right << setw(5) << bookQuantity[i] << "   " << setw(15) << cart[i].getISBN()
-                            << setw(25) << cart[i].getTitle() << setw(13) << right
-                            << cart[i].getRetail() << setw(13) << bookQuantity[i] * cart[i].getRetail() << endl;
+                            log << right << setw(5) << bookQuantity[i] << "   " << setw(15) << cart[i].getISBN()
+                                << setw(25) << cart[i].getTitle() << setw(13) << right
+                                << cart[i].getRetail() << setw(13) << bookQuantity[i] * cart[i].getRetail() << endl;
 
-                        subtotal += (cart[i].getRetail() * bookQuantity[i]);
-                    }
-
-                    taxes = 0.0875 * subtotal;
-                    total = taxes + subtotal;
-
-                    cout << endl << setw(66) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
-                    log << endl << setw(66) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
-                    cout << setw(66) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
-                    log << setw(66) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
-                    cout << setw(66) << "Total: " << setw(8) << setprecision(2) << total << endl;
-                    log << setw(66) << "Total: " << setw(8) << setprecision(2) << total << endl;
-
-
-
-
-                    cout << endl << "Enter the amount of payment: ";
-                    if (cin >> payment) {
-                        cin.ignore();
-                        if (payment < total) {
-                            cout << "Payment is not enough." << endl;
+                            subtotal += (cart[i].getRetail() * bookQuantity[i]);
                         }
-                        else {
-                            validPayment = true;
-                            for (int i = 0; i < cartSize; i++) {
-                                int position = searchBook(cart[i].getTitle());
-                                int newQuantity = bookArray[position].getQuantity() - bookQuantity[i];
-                                bookArray[position].setQuantity(newQuantity);
-                                if (bookArray[position].getQuantity() < 0) {
-                                    bookArray[position].setQuantity(0);
+
+                        taxes = 0.0875 * subtotal;
+                        total = taxes + subtotal;
+
+                        cout << endl << setw(66) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
+                        log << endl << setw(66) << "Subtotal: " << setw(8) << fixed << setprecision(2) << subtotal << endl;
+                        cout << setw(66) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
+                        log << setw(66) << "Taxes: " << setw(8) << setprecision(2) << taxes << endl;
+                        cout << setw(66) << "Total: " << setw(8) << setprecision(2) << total << endl;
+                        log << setw(66) << "Total: " << setw(8) << setprecision(2) << total << endl;
+
+
+
+
+                        cout << endl << "Enter the amount of payment: ";
+                        if (cin >> payment) {
+                            cin.ignore();
+                            if (payment < total) {
+                                cout << "Payment is not enough." << endl;
+                                system("PAUSE");
+                            }
+                            else {
+                                validPayment = true;
+                                for (int i = 0; i < cartSize; i++) {
+                                    int position = searchBook(cart[i].getTitle());
+                                    int newQuantity = bookArray[position].getQuantity() - bookQuantity[i];
+                                    bookArray[position].setQuantity(newQuantity);
+                                    if (bookArray[position].getQuantity() < 0) {
+                                        bookArray[position].setQuantity(0);
+                                    }
                                 }
                             }
+                        } else {
+                            cin.clear();
+                            cin.ignore(1000, '\n');
                         }
-                    } else {
-                        cin.clear();
-                        cin.ignore();
-                    }
-                    log << setw(30) << "Payment: " << setw(8) << setprecision(2) << payment << endl;
+                        log << setw(30) << "Payment: " << setw(8) << setprecision(2) << payment << endl;
 
-                    change = payment - total;
+                        change = payment - total;
 
-                    cout << setw(66) << "Change: " << setw(8) << change << endl;
-                    log << setw(66) << "Change: " << setw(8) << change << endl << endl;
-                } while (validPayment == false);
+                        cout << setw(66) << "Change: " << setw(8) << change << endl;
+                        log << setw(66) << "Change: " << setw(8) << change << endl << endl;
+                    } while (validPayment == false);
 
-                counter = 0;
-                subtotal = 0;
-                saveBook();
-                delete[] cart;
+                    counter = 0;
+                    subtotal = 0;
+                    saveBook();
+                    delete[] cart;
 
-                cartSize = 0;
-                cart = new Book[cartSize];
+                    cartSize = 0;
+                    cart = new Book[cartSize];
 
-                cout << endl << "Press enter to return to the Cashier menu";
-                getline(cin, emptyStr);
-                break;
-            }
+                    cout << endl << "Press enter to return to the Cashier menu";
+                    getline(cin, emptyStr);
+                    break;
+                } else {
+                    cout << "You have no items in the cart." << endl;
+                    cout << "Please add an item in your cart to checkout." << endl;
+                    system("PAUSE");
+                    break;
+                }
             case 3: { //Exit back to the main menu
                         cashierExit = 1;
                         break;
@@ -458,15 +470,17 @@ void cashierMenu()
             default: {
                         break;
             }
-            }
+        }
+        }
         } else {
             cin.clear();
-            cin.ignore();
+            cin.ignore(1000, '\n');
         }
     } while (cashierExit == 0);
 
     log.close();
 }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void reportMenu()
 {
@@ -522,7 +536,7 @@ void reportMenu()
             }
         } else {
             cin.clear();
-            cin.ignore();
+            cin.ignore(1000, '\n');
         }
 
     } while (reportExit == 0);
@@ -560,13 +574,13 @@ void addBook()
 
     cout << "Title: ";
     getline(cin, temptitle);
-    bookArray[arraySize-1].setTitle(temptitle);
+
 
     do {
         cout << endl << "ISBN: ";
         getline(cin, tempisbn);
         if (tempisbn.length() == 11 || tempisbn.length() == 13) {
-            bookArray[arraySize-1].setISBN(tempisbn);
+
             validISBN = true;
         } else {
             cout << "Invalid ISBN. ISBN must be 11 or 13 digits." << endl;
@@ -575,26 +589,25 @@ void addBook()
 
     cout << endl << "Author: ";
     getline(cin, tempauthor);
-    bookArray[arraySize-1].setAuthor(tempauthor);
 
     cout << endl << "Publisher: ";
     getline(cin, temppublisher);
-    bookArray[arraySize-1].setPublisher(temppublisher);
+
 
     cout << endl << "Date added: ";
     getline(cin, tempdate);
-    bookArray[arraySize-1].setDateAdded(tempdate);
+
 
     do {
         cout << endl << "Retail Price: ";
         if (cin >> tempretail) {
             cin.ignore();
-            bookArray[arraySize-1].setRetail(tempretail);
+
             validRetail = true;
         } else {
             cout << "Not a valid retail price." << endl;
             cin.clear();
-            cin.ignore();
+            cin.ignore(1000, '\n');
         }
     } while (validRetail == false);
 
@@ -603,12 +616,12 @@ void addBook()
         cout << endl << "Wholesale Price: ";
         if (cin >> tempwholesale) {
             cin.ignore();
-            bookArray[arraySize-1].setWholeSale(tempwholesale);
+
             validWholeSale = true;
         } else {
             cout << "Not a valid wholesale price." << endl;
             cin.clear();
-            cin.ignore();
+            cin.ignore(1000, '\n');
         }
     } while (validWholeSale == false);
 
@@ -616,12 +629,15 @@ void addBook()
         cout << endl << "Quantity: ";
         if (cin >> tempquantity) {
             cin.ignore();
-            bookArray[arraySize-1].setQuantity(tempquantity);
             validQuantity = true;
-        } else {
+        } else if (tempquantity < 0){
+            cout << "Minimum value of 0." << endl;
+            cin.clear();
+            cin.ignore(1000, '\n');
+        } else{
             cout << "Not a valid quantity." << endl;
             cin.clear();
-            cin.ignore();
+            cin.ignore(1000, '\n');
         }
 
     } while (validQuantity == false);
@@ -633,6 +649,14 @@ void addBook()
         cin >> adminCode;
         if (adminCode == admin[currentEmployee].getAdminCode()) {
             isValid = true;
+            bookArray[arraySize-1].setTitle(temptitle);
+            bookArray[arraySize-1].setISBN(tempisbn);
+            bookArray[arraySize-1].setAuthor(tempauthor);
+            bookArray[arraySize-1].setPublisher(temppublisher);
+            bookArray[arraySize-1].setDateAdded(tempdate);
+            bookArray[arraySize-1].setRetail(tempretail);
+            bookArray[arraySize-1].setWholeSale(tempwholesale);
+            bookArray[arraySize-1].setQuantity(tempquantity);
             saveBook();
             cout << endl << endl;
             cout << "----------------" << bookArray[arraySize - 1].getTitle() << " ADDED----------------" << endl;
@@ -640,6 +664,7 @@ void addBook()
             system("PAUSE");
         } else if (adminCode == "x" || adminCode == "X") {
             isValid = true;
+            break;
         }
     } while (isValid == false);
 
@@ -675,7 +700,7 @@ void editBook()
                 cout << "6) Retail Price" << endl;
                 cout << "7) Wholesale price" << endl;
                 cout << "8) Quantity in inventory" << endl;
-                cout << "9) Multiple or all attributes" << endl;
+                cout << "9) All attributes" << endl;
                 cout << "0) Cancel..." << endl << endl;
                 cout << "Enter your choice: ";
                 if (cin >> editSelect) {
@@ -787,7 +812,7 @@ void editBook()
                     case 6: {
                         bool validRetail = false;
                         do {
-                            cout << endl << "Retail Price: ";
+                            cout << endl << "Please enter a retail price: ";
                             if (cin >> newRetail) {
                                 cin.ignore();
                                 validRetail = true;
@@ -805,9 +830,10 @@ void editBook()
                                     }
                                 } while (isValid == false);
                             } else {
-                                cout << "Not a valid retail price." << endl;
                                 cin.clear();
-                                cin.ignore();
+                                cin.ignore(1000, '\n');
+                                cout << "Not a valid retail price." << endl;
+                                newRetail = 0;
                             }
                         } while (validRetail == false);
                         break;
@@ -816,7 +842,7 @@ void editBook()
                     case 7: {
                         bool validWholeSale = false;
                         do {
-                            cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
+                            cout << "Please enter new wholesale price: ";
                             if (cin >> newWholeSale) {
                                 cin.ignore();
                                 validWholeSale = true;
@@ -836,7 +862,7 @@ void editBook()
                             } else {
                                 cout << "Not a valid wholesale price." << endl;
                                 cin.clear();
-                                cin.ignore();
+                                cin.ignore(1000, '\n');
                             }
                         } while (validWholeSale == false);
                         break;
@@ -845,29 +871,32 @@ void editBook()
                     case 8: {
                         bool validQuantity = false;
                        do {
-                        cout << "Please enter a new quantity: ";
-                        if (cin >> newQuantity) {
-                            cin.ignore();
-                            validQuantity = true;
-                            string adminCode;
-                            bool isValid = false;
-                            do {
-                                cout << "Enter Admin Code to verify (enter 'x' to exit): ";
-                                cin >> adminCode;
-                                if (adminCode == admin[currentEmployee].getAdminCode()) {
-                                    isValid = true;
-                                    bookArray[editLocation].setQuantity(newQuantity);
-                                    saveBook();
-                                } else if (adminCode == "x" || adminCode == "X") {
-                                    isValid = true;
-                                }
-                            } while (isValid == false);
-                        } else {
-                            cout << "Not a valid quantity." << endl;
-                            cin.clear();
-                            cin.ignore();
-                        }
-
+                            cout << "Please enter a new quantity: ";
+                            cin >> newQuantity;
+                            if (cin.good() && newQuantity >= 0) {
+                                cin.ignore();
+                                validQuantity = true;
+                                string adminCode;
+                                bool isValid = false;
+                                do {
+                                    cout << "Enter Admin Code to verify (enter 'x' to exit): ";
+                                    cin >> adminCode;
+                                    if (adminCode == admin[currentEmployee].getAdminCode()) {
+                                        isValid = true;
+                                        bookArray[editLocation].setQuantity(newQuantity);
+                                        saveBook();
+                                    } else if (adminCode == "x" || adminCode == "X") {
+                                        isValid = true;
+                                    }
+                                } while (isValid == false);
+                            } else if (newQuantity < 0) {
+                                cout << "Not a valid quantity." << endl;
+                                cout << "Quantity must be minimum of 0." << endl;
+                            } else {
+                                cout << "Not a valid quantity." << endl;
+                                cin.clear();
+                                cin.ignore(1000, '\n');
+                            }
                       } while (validQuantity == false);
                     }
                         break;
@@ -893,26 +922,28 @@ void editBook()
                         cout << "Please enter new date added (mmddyyyy): ";
                         getline(cin, newDateAdded);
                         do {
-                            cout << "Please enter new retail price (in <dollars>.<cents> format): ";
+                            cout << "Please enter new retail price: ";
                             if (cin >> newRetail) {
                                 cin.ignore();
                                 validRetail = true;
                             } else {
+                                cin.clear();
+                                cin.ignore(1000, '\n');
                                 cout << "Not a valid retail price." << endl;
                                 cin.clear();
-                                cin.ignore();
+                                cin.ignore(1000, '\n');
                             }
                         } while (validRetail == false);
 
                         do {
-                            cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
+                            cout << "Please enter new wholesale price: ";
                             if (cin >> newWholeSale) {
                                 cin.ignore();
                                 validWholeSale = true;
                             } else {
                                 cout << "Not a vaid wholesale price." << endl;
-                                cin.ignore();
                                 cin.clear();
+                                cin.ignore(1000, '\n');
                             }
                         } while (validWholeSale == false);
 
@@ -924,7 +955,7 @@ void editBook()
                             } else {
                                 cout << "Not a valid quantity." << endl;
                                 cin.clear();
-                                cin.ignore();
+                                cin.ignore(1000, '\n');
                             }
                         } while (validQuantity == false);
 
@@ -976,7 +1007,7 @@ void editBook()
                     }
                 } else {
                     cin.clear();
-                    cin.ignore();
+                    cin.ignore(1000, '\n');
                     system("CLS");
                 }
             } while (screenRepeat == true);
@@ -995,9 +1026,12 @@ void deleteBook()
     do {
         system("CLS");
         string deleteQuery;
-        cout << "Please enter title or ISBN to delete: " << endl;
+        cout << "Please enter title or ISBN to delete (enter '!' to exit): " << endl;
         getline(cin, deleteQuery);
-
+        if (deleteQuery.at(0) == '!') {
+            deleteRepeat = false;
+            break;
+        }
         int deleteLocation;
 
         deleteLocation = searchBook(deleteQuery);
@@ -1040,16 +1074,16 @@ void deleteBook()
                     case 'y':
                         break;
                     case 'N':
+                    case 'n':
                         deleteRepeat = false;
                         break;
                     default:
                         break;
                     }
                 }
-                break;
             } else {
                 cin.clear();
-                cin.ignore();
+                cin.ignore(1000, '\n');
             }
         }
         else {
@@ -1343,7 +1377,7 @@ int login() {
 
     string username, password, adminCode;
     cout << endl << endl << endl << endl << endl << endl << endl;
-    char input = ' ';   
+    char input = ' ';
     cout << setw(40) << "Username: ";
     cin >> username;
     cout << setw(40) << "Password: ";
