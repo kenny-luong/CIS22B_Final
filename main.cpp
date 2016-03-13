@@ -1349,7 +1349,7 @@ int login() {
     cout << setw(40) << "Password: ";
 
     while (input !=  13) {
-        input = getch();
+        input = _getch();
         if (input != 13) {
             password += input;
             cout << '*';
