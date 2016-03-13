@@ -7,6 +7,10 @@
 #include "book.h"
 #include <cstdlib>
 #include <ctime>
+#include "employee.h"
+#include "admin.h"
+#include <conio.h>
+#include <stdio.h>
 
 /********************************************
  **                 READ-ME
@@ -43,8 +47,9 @@ using namespace std;
 //GLOBALS
 
 int sizeOfArray();
+int sizeOfLogin();
 //menu prototypes
-void inventoryMenu();
+void inventoryMenu(int);
 void cashierMenu();
 void reportMenu();
 //cashier protoype
@@ -64,14 +69,28 @@ void costReport();
 void ageReport();
 //misc prototype
 string toLower(string);
+string currentDateTime();
+int login();
+void loadAdmin();
+int sizeOfAdmin();
+int sizeOfEmployee();
+void loadEmployee();
 
 string emptyStr; //used for menu navigation
 
 int arraySize = sizeOfArray();
+int adminSize = sizeOfAdmin();
+int employeeSize = sizeOfEmployee();
 int cartSize = 0;
 Book *tempBook = new Book;
 Book *bookArray = new Book[arraySize];
 Book *cart = new Book[cartSize];
+Admin *tempAdmin = new Admin;
+Admin *admin = new Admin[adminSize];
+Employee *employee = new Employee[employeeSize];
+
+Employee  *tempEmployee = new Employee;
+
 
 template <class T>
 
@@ -89,16 +108,6 @@ void addToArray (T &arrayName, int &arraySize) {
         arrayName = tempArray;
 }
 
-string currentDateTime() {
-    time_t     now = time(0);
-    struct tm  tstruct;
-    char       buf[80];
-    tstruct = *localtime(&now);
-    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
-
-    return buf;
-}
-
 //----------------------------------------
 //-----------------MAIN-------------------
 //----------------------------------------
@@ -107,47 +116,234 @@ int main() {
     if (!loadBook()) {
         return 0;
     }
-    int x = 1;
-    int mainChoice = 0;
-    do{
-        system("cls");
-        std::cout << endl << endl << endl << endl << endl;
-        std::cout << setw(50) << "Serendipity Booksellers" << endl;
-        std::cout << setw(43) << "Main Menu" << endl;
-        std::cout << endl;
-        std::cout << setw(49) << "1. Inventory database" << endl;
-        std::cout << setw(48) << "2. Cashier interface" << endl;
-        std::cout << setw(49) << "3. Generate report(s)" << endl;
-        std::cout << setw(46) << "4. Exit program..." << endl;
-        std::cout << endl << endl;
-        std::cout << setw(47) << "Enter your choice: ";
 
-        if (cin >> mainChoice) {
-            system("cls");
-            switch (mainChoice)
-            {
-                case 1:
-                    inventoryMenu();
-                    break;
-                case 2:
-                    cashierMenu();
-                    break;
-                case 3:
-                    reportMenu();
-                    break;
-                case 4:
-                    return 0;
-                default: {
-                    cout << "Invalid option." << endl;
-                    break;
-                }
+    loadAdmin();
+    loadEmployee();
+    bool isValid = false, loginScreen = true;
+    int validLogin;
+    do {
+        isValid = false;
+        do {
+            validLogin = login();
+            switch (validLogin) {
+            case 1:
+                isValid = true;
+                break;
+            case 2:
+                isValid = true;
+                break;
+            case 3:
+                break;
             }
-        } else {
-            cin.clear();
-            cin.ignore();
-            cout << "Not a valid input." << endl;
+        } while (isValid == false);
+
+        int x = 1;
+        int mainChoice = 0;
+        do{
+            system("cls");
+            std::cout << endl << endl << endl << endl << endl;
+            std::cout << setw(50) << "Serendipity Booksellers" << endl;
+            std::cout << setw(43) << "Main Menu" << endl;
+            std::cout << endl;
+            std::cout << setw(49) << "1. Inventory Database" << endl;
+            std::cout << setw(48) << "2. Cashier Interface" << endl;
+            std::cout << setw(38) << "3. Reports" << endl;
+            std::cout << setw(37) << "4. Logout" << endl;
+            std::cout << setw(43) << "5. Exit Program" << endl;
+            std::cout << endl << endl;
+            std::cout << setw(47) << "Enter your choice: ";
+
+            if (cin >> mainChoice) {
+                system("cls");
+                switch (mainChoice)
+                {
+                    case 1:
+                        inventoryMenu(validLogin);
+                        break;
+                    case 2:
+                        cashierMenu();
+                        break;
+                    case 3:
+                        reportMenu();
+                        break;
+                    case 4:
+                        x = 2;
+                        break;
+                    case 5:
+                        return 0;
+                    default: {
+                        cout << "Invalid option." << endl;
+                        break;
+                    }
+                }
+            } else {
+                cin.clear();
+                cin.ignore();
+                cout << "Not a valid input." << endl;
+            }
+        } while (x == 1);
+    } while (loginScreen == true);
+
+}
+
+int sizeOfAdmin() {
+    ifstream inputFile;
+    string temp;
+    int counter = 0;
+    inputFile.open("admin.txt");
+
+
+    while (inputFile >> temp) {
+        counter++;
+    }
+    inputFile.close();
+
+    return counter/2;
+}
+
+int sizeOfEmployee() {
+    ifstream inputFile;
+    string temp;
+    int counter = 0;
+    try {
+        inputFile.open("employee.txt");
+        if (!inputFile.is_open()) {
+            throw 4;
         }
-    } while (x == 1);
+    } catch (int z) {
+        cout << "Error: " << z << endl;
+    }
+
+    while (inputFile >> temp) {
+        counter++;
+    }
+    inputFile.close();
+
+    return counter/2;
+}
+
+void loadAdmin() {
+    ifstream adminFile;
+    try {
+        adminFile.open("admin.txt", ios::in);
+        if (!adminFile.is_open()) {
+            throw 2;
+        }
+    } catch (int x) {
+        cout << "Error: " << x << endl;
+    }
+
+    adminFile.close();
+
+    adminFile.open("admin.txt", ios::in);
+    string temp;
+    int i = 0;
+    while (i < adminSize) {
+        adminFile >> temp;
+        tempAdmin->setUsername(temp);
+        adminFile >> temp;
+        tempAdmin->setPassword(temp);
+
+        admin[i] = *tempAdmin;
+        i++;
+    }
+
+    adminFile.close();
+
+}
+
+void loadEmployee() {
+    ifstream employeeFile;
+    try {
+        employeeFile.open("employee.txt", ios::in);
+        if (!employeeFile.is_open()) {
+            throw 2;
+        }
+    } catch (int x) {
+        cout << "Error: " << x << endl;
+    }
+
+    employeeFile.close();
+
+    employeeFile.open("employee.txt", ios::in);
+    string temp;
+    int i = 0;
+    while (i < employeeSize) {
+        employeeFile >> temp;
+        tempEmployee->setUsername(temp);
+        employeeFile >> temp;
+        tempEmployee->setPassword(temp);
+
+        employee[i] = *tempEmployee;
+        i++;
+    }
+
+    employeeFile.close();
+
+}
+
+
+int login() {
+    system("CLS");
+
+    ifstream adminFile;
+    ifstream employeeFile;
+    try {
+        adminFile.open("admin.txt", ios::in);
+        if (!adminFile.is_open()) {
+            throw 2;
+        }
+    } catch (int x) {
+        cout << "Error: " << x << endl;
+    }
+
+    try {
+        employeeFile.open("employee.txt", ios::in);
+        if (!employeeFile.is_open()) {
+            throw 3;
+        }
+    } catch (int y) {
+        cout << "Error: " << y << endl;
+    }
+
+
+    string username, password, adminCode;
+    std::cout << endl << endl << endl << endl << endl << endl << endl;
+    char input = ' ';
+    cout << setw(40) << "Username: ";
+    cin >> username;
+    cout << setw(40) << "Password: ";
+
+    while (input !=  13) {
+        input = getch();
+        if (input != 13) {
+            password += input;
+            cout << '*';
+        }
+    }
+
+    for (int i = 0; i < adminSize; i++) {
+        if (username == admin[i].getUsername() && password == admin[i].getPassword()) {
+            return 1;
+        }
+    }
+
+    for (int i = 0; i < employeeSize; i++) {
+         if (username == employee[i].getUsername() && password == employee[i].getPassword()) {
+            return 2;
+        }
+    }
+    return 3;
+}
+
+string currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    return buf;
 }
 
 // This function is meant to actually display the contents of the array we've loaded in loadBook.
@@ -172,7 +368,8 @@ void displayBook(int i) {
 // This function is strictly to return the position of the book within the array loaded with loadBook().
 
 string toLower(string input) {
-    for (int i = 0; i < input.length(); i++) {
+    int length = input.length();
+    for (int i = 0; i < length; i++) {
         input[i] = tolower(input[i]);
     }
 
@@ -199,7 +396,7 @@ void addToCart(int position) {
 }
 
 
-void inventoryMenu()
+void inventoryMenu(int validLogin)
 {
     int inventoryExit = 0;
     do {
@@ -230,20 +427,36 @@ void inventoryMenu()
                     break;
                 }
                 case 2:{  // Add a book
-                    addBook();
-                    cout << endl << "Press enter to return to the inventory menu";
-                    getline(cin, emptyStr);
+                    if (validLogin == 1) {
+                        addBook();
+                        cout << endl << "Press enter to return to the inventory menu";
+                        getline(cin, emptyStr);
+                    } else {
+                        cout << "Only administrators can access this." << endl;
+                        system("PAUSE");
+                    }
                     break;
                 }
 
                 case 3: { // Edit a book
-                    editBook();
-                    cout << endl << "Press enter to return to the inventory menu";
-                    getline(cin, emptyStr);
+                    if (validLogin == 1) {
+                        editBook();
+                        cout << endl << "Press enter to return to the inventory menu";
+                        getline(cin, emptyStr);
+                    } else {
+                        cout << "Only administrators can access this." << endl;
+                        system("PAUSE");
+                    }
                     break;
                 }
                 case 4: { //Delete a book
-                    deleteBook();
+                    if (validLogin == 1) {
+                        deleteBook();
+                    } else {
+                        cout << "Only administrators can access this." << endl;
+                        system("PAUSE");
+                    }
+
                     break;
                 }
                 case 5: { //Exit back to the main menu
@@ -627,10 +840,10 @@ void addBook()
     string temptitle, tempisbn, tempauthor, temppublisher, tempdate;
     double tempretail, tempwholesale;
     int tempquantity;
-    bool validISBN = false,  
-         //validDate = false, 
-         validQuantity = false, 
-         validWholeSale = false, 
+    bool validISBN = false,
+         //validDate = false,
+         validQuantity = false,
+         validWholeSale = false,
          validRetail = false;
 
     std::cout << "Title: ";
@@ -660,7 +873,7 @@ void addBook()
     std::getline(std::cin, tempdate);
     bookArray[arraySize-1].setDateAdded(tempdate);
 
-    do {    
+    do {
         std::cout << endl << "Retail Price: ";
         if (std::cin >> tempretail) {
             std::cin.ignore();
@@ -672,9 +885,9 @@ void addBook()
             cin.ignore();
         }
     } while (validRetail == false);
-    
 
-    do {    
+
+    do {
         std::cout << endl << "Wholesale Price: ";
         if (std::cin >> tempwholesale) {
             std::cin.ignore();
@@ -814,7 +1027,7 @@ void editBook()
                         getline(cin, newTitle);
                         bookArray[editLocation].setTitle(newTitle);
                         break;
-                    case 2: {   
+                    case 2: {
                         bool validISBN = false;
                         do {
                             std::cout << endl << "ISBN: ";
@@ -845,7 +1058,7 @@ void editBook()
                         break;
                     case 6: {
                         bool validRetail = false;
-                        do {    
+                        do {
                             std::cout << endl << "Retail Price: ";
                             if (std::cin >> newRetail) {
                                 std::cin.ignore();
@@ -859,7 +1072,7 @@ void editBook()
                         } while (validRetail == false);
                         break;
                     }
-                        
+
                     case 7: {
                         bool validWholeSale = false;
                         do {
@@ -926,7 +1139,7 @@ void editBook()
                                 cin.ignore();
                             }
                         } while (validRetail == false);
-                        
+
                         do {
                             cout << "Please enter new wholesale price (in <dollars>.<cents> format): ";
                             if (cin >> newWholeSale) {
@@ -948,7 +1161,7 @@ void editBook()
                                 cout << "Not a valid quantity." << endl;
                                 cin.clear();
                                 cin.ignore();
-                            } 
+                            }
                         } while (validQuantity == false);
 
                         bookArray[editLocation].setTitle(newTitle);
@@ -961,7 +1174,7 @@ void editBook()
                         bookArray[editLocation].setQuantity(newQuantity);
                         break;
                     }
-                       
+
                     case 0:
                         cout << "Cancelling..." << endl;
                         screenRepeat = false;
