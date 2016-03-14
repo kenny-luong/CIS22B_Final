@@ -52,8 +52,8 @@ public:
 	double getRetail();
 	double getWholeSale();
 	int getQuantity();
-	//bool isOlder(string);
 	friend bool isOlder(const Book&, const Book&);
+	friend ostream& operator<<(ostream&, const Book&);
 };
 
 #endif
