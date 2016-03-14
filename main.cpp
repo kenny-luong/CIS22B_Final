@@ -576,7 +576,7 @@ void addBook()
     getline(cin, temppublisher);
 
 
-    cout << endl << "Date added: ";
+    cout << endl << "Date added (mmddyyyy): ";
     getline(cin, tempdate);
 
 
@@ -607,7 +607,7 @@ void addBook()
             if (tempwholesale > 0) {
                 cin.ignore();
                 validWholeSale = true;
-            } else if (tempquantity < 0) {
+            } else if (tempwholesale < 0) {
                 cout << "Minimum value of 0.00." << endl;
                 cin.clear();
                 cin.ignore(1000, '\n');
@@ -1415,7 +1415,7 @@ int login() {
     cout << setw(40) << "Password: ";
 
     while ((input !=  13)) {
-        input = getch();
+        input = _getch();
         if ((input != 13)) {
             if (input != '\b') {
                 cout << '*';
