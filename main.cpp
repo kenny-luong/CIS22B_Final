@@ -8,6 +8,7 @@
 #include <ctime>
 #include "employee.h"
 #include "admin.h"
+#include <cmath>
 #include <conio.h>
 #include <stdio.h>
 
@@ -409,7 +410,7 @@ void cashierMenu()
 						cout << endl << "Enter the amount of payment: ";
 						if (cin >> payment) {
 							cin.ignore();
-							if (payment < total - 0.001) {
+							if (payment < (round(total*100.0)/100)) {
 								cout << "Payment is not enough." << endl;
 								system("PAUSE");
 							}
