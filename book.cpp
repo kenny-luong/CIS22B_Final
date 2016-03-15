@@ -1,14 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
-#include "book.h" // update file path as needed
-#include <iomanip>
-
-/*********************************
-**			To-Do List
-**
-**	- Update directory #include for header file.
-**
-**
-*********************************/
+#include "book.h"
 
 Book::Book(string theTitle,
 	string theISBN,
