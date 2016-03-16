@@ -84,7 +84,7 @@ int Book::getQuantity() {
 }
 
 bool isOlder(const Book& b1, const Book& b2) {
-	if (stoi(b1.dateAdded.substr(4, 4)) < stoi(b2.dateAdded.substr(4, 4)))
+/*	if (stoi(b1.dateAdded.substr(4, 4)) < stoi(b2.dateAdded.substr(4, 4)))
 	{
 		return true;
 	}
@@ -98,18 +98,18 @@ bool isOlder(const Book& b1, const Book& b2) {
 			}
 		}
 	}
-	return false;
+	return false;*/
 }
 
 ostream& operator<<(ostream& os, const Book& b) {
-	os << setfill('.') << setw(10) << setw(25) << left << "Title:" << setw(20) << right << b.title << endl;
-	os << setw(25) << left << "ISBN:" << setw(20) << right << b.isbn << endl;
-	os << setw(25) << left << "Author:" << setw(20) << right << b.author << endl;
-	os << setw(25) << left << "Publisher:" << setw(20) << right << b.publisher << endl;
-	os << setw(25) << left << "Date Added (mmddyyyy):" << setw(20) << right << b.dateAdded << endl;
-	os << setw(25) << left << "Retail Price:" << setw(20) << right << b.retail << endl;
-	os << setw(25) << left << "Wholesale Price:" << setw(20) << right << b.wholesale << endl;
-	os << setw(25) << left << "Quantity in inventory:" << setw(20) << right << b.quantity << endl;
+	os << setfill(' ') << setw(10) << setw(25) << left << "Title:" << setw(40) << right << b.title << endl;
+	os << setw(25) << left << "ISBN:" << setw(40) << right << b.isbn << endl;
+	os << setw(25) << left << "Author:" << setw(40) << right << b.author << endl;
+	os << setw(25) << left << "Publisher:" << setw(40) << right << b.publisher << endl;
+	os << setw(25) << left << "Date Added (mmddyyyy):" << setw(40) << right << b.dateAdded << endl;
+	os << setw(25) << left << "Retail Price:" << setw(40) << right << b.retail << endl;
+	os << setw(25) << left << "Wholesale Price:" << setw(40) << right << b.wholesale << endl;
+	os << setw(25) << left << "Quantity in inventory:" << setw(40) << right << b.quantity << endl;
 	os << setfill(' ');
 
 	return os;
