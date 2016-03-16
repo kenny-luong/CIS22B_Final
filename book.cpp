@@ -84,7 +84,7 @@ int Book::getQuantity() {
 }
 
 bool isOlder(const Book& b1, const Book& b2) {
-/*	if (stoi(b1.dateAdded.substr(4, 4)) < stoi(b2.dateAdded.substr(4, 4)))
+	if (stoi(b1.dateAdded.substr(4, 4)) < stoi(b2.dateAdded.substr(4, 4)))
 	{
 		return true;
 	}
@@ -98,7 +98,7 @@ bool isOlder(const Book& b1, const Book& b2) {
 			}
 		}
 	}
-	return false;*/
+	return false;
 }
 
 ostream& operator<<(ostream& os, const Book& b) {
