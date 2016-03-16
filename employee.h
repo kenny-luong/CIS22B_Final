@@ -15,6 +15,8 @@ public:
 	void setPassword(string);
 	string getUsername();
 	string getPassword();
+	virtual void setAdminCode(string) { return; }
+	virtual string getAdminCode() { return NULL; }
 };
 
 #endif
