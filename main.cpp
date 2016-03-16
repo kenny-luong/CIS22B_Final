@@ -337,14 +337,17 @@ void cashierMenu()
 								   switch (repeat) {
 								   case 'Y':
 								   case 'y':
+								   	   cin.clear();
 									   cin.ignore(1000, '\n');
 									   validResponse = true;
 									   break;
 								   case 'N':
 								   case 'n': {
-												 validResponse = true;
-												 addAnother = false;
-												 break;
+								   		cin.clear();
+							   			cin.ignore(1000, '\n');
+										validResponse = true;
+										addAnother = false;
+										break;
 								   }
 								   default: {
 												cout << "That was not a valid input." << endl;
@@ -1457,16 +1460,22 @@ int login() {
 	cin >> username;
 	cout << setw(40) << "Password: ";
 
+	int count = 0;
+
 	while ((input != 13)) {
 		input = _getch();
 		if ((input != 13)) {
 			if (input != '\b') {
 				cout << '*';
 				password += input;
-			}
-			else if (input == '\b') {
+				count++;
+			} else if (input == '\b' && count > 0) {
 				cout << '\b' << ' ' << '\b';
+				--count;
 				password = password.substr(0, password.length() - 1);
+			} else if (input == '\b' && count <= 0) {
+				count = 0;
+				cout << ' ' << '\b';
 			}
 		}
 	}
