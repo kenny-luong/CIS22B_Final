@@ -12,12 +12,6 @@
 #include <conio.h>
 #include <stdio.h>
 
-/*********************
-**      Functional To-Do List
-**
-** - Polymorphism
-***********************/
-
 /**********************
 **      Error List
 **
