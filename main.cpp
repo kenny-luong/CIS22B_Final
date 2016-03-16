@@ -413,7 +413,7 @@ void cashierMenu()
 								cout << endl << "Enter the amount of payment: ";
 								if (cin >> payment) {
 									cin.ignore();
-									if (payment < (round(total*100.0) / 100)) {
+									if (payment < ((round(total*100.0)) / 100 - 0.01)) {
 										cout << "Payment is not enough." << endl;
 										system("PAUSE");
 									}
