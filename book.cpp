@@ -1,5 +1,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "book.h"
+#include <iomanip>
+
 
 Book::Book(string theTitle,
 	string theISBN,
